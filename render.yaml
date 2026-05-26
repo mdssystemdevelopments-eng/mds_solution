@@ -1,0 +1,27 @@
+# Deploy no Render: https://render.com
+# New > Blueprint > conecte este repositório ou use Web Service manual
+
+services:
+  - type: web
+    name: mds-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://mdssolution.com.br,https://www.mdssolution.com.br
+      - key: COOKIE_SECURE
+        value: "true"

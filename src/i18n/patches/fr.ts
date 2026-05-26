@@ -1,0 +1,131 @@
+import { deepMerge } from "@/lib/deep-merge";
+import { enPatch } from "@/i18n/patches/en";
+import type { LocalePatch } from "@/i18n/patches/types";
+import { clientServicesEn } from "@/i18n/patches/shared/client-services-en";
+
+const frUi = {
+  skipToContent: "Aller au contenu",
+  loader: { kicker: "INITIALISATION", name: "MDS SOLUTIONS", hint: "Chargement de l'interface…" },
+  scrollTop: "Retour en haut",
+  nav: {
+    openMenu: "Ouvrir le menu",
+    closeMenu: "Fermer le menu",
+    brandAria: "MDS Solutions Technologiques, accueil",
+    languageLabel: "Langue du site",
+    chooseLanguage: "Choisir la langue",
+  },
+  homeServices: {
+    eyebrow: "Services",
+    title: "Tout ce dont votre entreprise a besoin en technologie",
+    lead: "Du site à l'ERP, avec du code sur mesure et un support proche.",
+    learnMore: "En savoir plus",
+    items: [
+      { title: "Développement Web", desc: "Sites, landing pages et portails performants avec SEO." },
+      { title: "Systèmes & ERP", desc: "Gestion des ventes, stocks, finances et intégrations." },
+      { title: "Applications", desc: "Apps mobiles et PWA connectées à votre activité." },
+      { title: "Assistance technique", desc: "Infrastructure, maintenance et support entreprise." },
+    ],
+  },
+  homeProcess: {
+    eyebrow: "Notre méthode",
+    title: "Du premier contact à la livraison",
+    steps: [
+      { title: "Briefing", text: "Périmètre, stack et délais alignés avec vous." },
+      { title: "Proposition", text: "Devis clair avec livrables et calendrier." },
+      { title: "Développement", text: "Code versionné et livraisons par étapes." },
+      { title: "Support", text: "Suivi et évolution continue." },
+    ],
+  },
+  homeCta: {
+    eyebrow: "Prochaine étape",
+    title: "Prêt à commencer ?",
+    lead: "Montez votre devis en ligne ou parlez à notre équipe.",
+    clientArea: "Espace Client",
+    contact: "Contact",
+  },
+  portfolio: { filterAll: "Tous" },
+  clientQuote: {
+    eyebrow: "Espace Client",
+    title: "Montez votre devis",
+    lead:
+      "Choisissez une catégorie pour voir le catalogue. Cochez les services et ils apparaissent dans « Produits sélectionnés ».",
+    catalogTitle: "Catalogue",
+    catalogHint: "Cliquez sur un onglet pour afficher les services.",
+    tabAll: "Tous",
+    tabAllServices: "Tous les services",
+    showingPrefix: "Affichage :",
+    itemsSuffix: "éléments",
+    emptyCategory: "Aucun service dans cette catégorie.",
+    selectedTitle: "Produits sélectionnés",
+    selectedEmpty: "Aucun service pour l'instant. Ouvrez une catégorie et sélectionnez les éléments.",
+    formTitle: "Vos coordonnées",
+    nameLabel: "Nom *",
+    namePlaceholder: "Votre nom",
+    emailLabel: "E-mail *",
+    emailPlaceholder: "vous@email.com",
+    phoneLabel: "Téléphone",
+    phonePlaceholder: "+33 6 00 00 00 00",
+    companyLabel: "Entreprise",
+    companyPlaceholder: "Optionnel",
+    urgencyLabel: "Urgence",
+    urgencyNormal: "Normal (2 à 4 semaines)",
+    urgencyUrgent: "Urgent",
+    urgencyFlexible: "Flexible",
+    budgetLabel: "Budget (optionnel)",
+    budgetPlaceholder: "Ex. : jusqu'à 5 000 €",
+    detailsLabel: "Détails du projet",
+    detailsPlaceholder: "Décrivez le projet...",
+    sendWhatsapp: "Envoyer via WhatsApp",
+    sendEmail: "Envoyer par e-mail",
+    validationHint: "Sélectionnez au moins un service et remplissez un nom et un e-mail valides.",
+    sentWhatsapp: "WhatsApp ouvert !",
+    sentEmail: "E-mail ouvert !",
+    removeService: "Retirer",
+  },
+  clientServiceCategories: {
+    web: { label: "Sites & Web", emoji: "🌐" },
+    sistema: { label: "Systèmes & ERP", emoji: "⚙️" },
+    app: { label: "Applications", emoji: "📱" },
+    tecnico: { label: "Assistance technique", emoji: "🛠️" },
+    consultoria: { label: "Conseil", emoji: "💡" },
+  },
+  clientServices: clientServicesEn,
+  categoryLabels: {
+    site: "Site Web",
+    erp: "Système ERP",
+    sistema: "Système Web",
+    app: "Application",
+  },
+};
+
+export const frPatch: LocalePatch = deepMerge(enPatch as Record<string, unknown>, {
+  nav: [
+    { href: "/", label: "Accueil" },
+    { href: "/sobre", label: "À propos" },
+    { href: "/servicos", label: "Services" },
+    { href: "/portfolio", label: "Projets" },
+    { href: "/contato", label: "Contact" },
+    { href: "/area-cliente", label: "Espace Client" },
+  ],
+  hero: {
+    headlineBefore: "Ingénierie numérique pour",
+    headlineAccent: "ceux qui construisent l'avenir",
+    subheadline:
+      "Sites, ERP, apps et infrastructure avec code sur mesure, déploiement en production et support continu.",
+    primaryCtaLabel: "Demander un devis",
+    secondaryCtaLabel: "Parler sur WhatsApp",
+    cardSummaryLabel: "Nos services",
+    cardFooterText: "Réponse rapide, devis transparent et support continu.",
+  },
+  cta: {
+    title: "Besoin d'aide avec la technologie ?",
+    text: "Site, système ou maintenance, écrivez-moi sur WhatsApp et nous alignerons la meilleure voie.",
+    buttonText: "Écrire sur WhatsApp",
+  },
+  footer: {
+    quickLinksLabel: "Liens rapides",
+    contactLabel: "Contact",
+    socialsLabel: "Réseaux",
+  },
+  ui: frUi,
+}) as LocalePatch;

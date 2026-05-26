@@ -1,0 +1,131 @@
+import { deepMerge } from "@/lib/deep-merge";
+import { enPatch } from "@/i18n/patches/en";
+import type { LocalePatch } from "@/i18n/patches/types";
+import { clientServicesEn } from "@/i18n/patches/shared/client-services-en";
+
+const itUi = {
+  skipToContent: "Vai al contenuto",
+  loader: { kicker: "INIZIALIZZAZIONE", name: "MDS SOLUZIONI", hint: "Caricamento interfaccia…" },
+  scrollTop: "Torna su",
+  nav: {
+    openMenu: "Apri menu",
+    closeMenu: "Chiudi menu",
+    brandAria: "MDS Soluzioni Tecnologiche, home",
+    languageLabel: "Lingua del sito",
+    chooseLanguage: "Scegli lingua",
+  },
+  homeServices: {
+    eyebrow: "Servizi",
+    title: "Tutto ciò che serve alla tua azienda in tecnologia",
+    lead: "Dal sito all'ERP, con codice su misura e supporto vicino.",
+    learnMore: "Scopri di più",
+    items: [
+      { title: "Sviluppo Web", desc: "Siti, landing page e portali con performance e SEO." },
+      { title: "Sistemi & ERP", desc: "Vendite, magazzino, finanza e integrazioni." },
+      { title: "Applicazioni", desc: "App mobile e PWA collegate al tuo business." },
+      { title: "Assistenza tecnica", desc: "Infrastruttura, manutenzione e supporto aziendale." },
+    ],
+  },
+  homeProcess: {
+    eyebrow: "Come lavoriamo",
+    title: "Dal primo contatto alla consegna",
+    steps: [
+      { title: "Briefing", text: "Ambito, stack e tempi allineati con te." },
+      { title: "Proposta", text: "Preventivo chiaro con consegne e cronoprogramma." },
+      { title: "Sviluppo", text: "Codice versionato e consegne per fasi." },
+      { title: "Supporto", text: "Monitoraggio ed evoluzione continua." },
+    ],
+  },
+  homeCta: {
+    eyebrow: "Prossimo passo",
+    title: "Pronto per iniziare?",
+    lead: "Crea il preventivo online o parla con il nostro team.",
+    clientArea: "Area Clienti",
+    contact: "Contatto",
+  },
+  portfolio: { filterAll: "Tutti" },
+  clientQuote: {
+    eyebrow: "Area Clienti",
+    title: "Crea il tuo preventivo",
+    lead:
+      "Scegli una categoria per il catalogo. Seleziona i servizi e compariranno in « Prodotti selezionati ».",
+    catalogTitle: "Catalogo",
+    catalogHint: "Clicca una scheda per mostrare i servizi.",
+    tabAll: "Tutti",
+    tabAllServices: "Tutti i servizi",
+    showingPrefix: "Visualizzazione:",
+    itemsSuffix: "elementi",
+    emptyCategory: "Nessun servizio in questa categoria.",
+    selectedTitle: "Prodotti selezionati",
+    selectedEmpty: "Nessun servizio ancora. Apri una categoria e seleziona gli elementi.",
+    formTitle: "I tuoi dati",
+    nameLabel: "Nome *",
+    namePlaceholder: "Il tuo nome",
+    emailLabel: "E-mail *",
+    emailPlaceholder: "tu@email.com",
+    phoneLabel: "Telefono",
+    phonePlaceholder: "+39 333 0000000",
+    companyLabel: "Azienda",
+    companyPlaceholder: "Opzionale",
+    urgencyLabel: "Urgenza",
+    urgencyNormal: "Normale (2-4 settimane)",
+    urgencyUrgent: "Urgente",
+    urgencyFlexible: "Flessibile",
+    budgetLabel: "Budget (opzionale)",
+    budgetPlaceholder: "Es. fino a € 5.000",
+    detailsLabel: "Dettagli del progetto",
+    detailsPlaceholder: "Descrivi il progetto...",
+    sendWhatsapp: "Invia via WhatsApp",
+    sendEmail: "Invia via e-mail",
+    validationHint: "Seleziona almeno un servizio e inserisci nome ed e-mail validi.",
+    sentWhatsapp: "WhatsApp aperto!",
+    sentEmail: "E-mail aperta!",
+    removeService: "Rimuovi",
+  },
+  clientServiceCategories: {
+    web: { label: "Siti & Web", emoji: "🌐" },
+    sistema: { label: "Sistemi & ERP", emoji: "⚙️" },
+    app: { label: "Applicazioni", emoji: "📱" },
+    tecnico: { label: "Assistenza tecnica", emoji: "🛠️" },
+    consultoria: { label: "Consulenza", emoji: "💡" },
+  },
+  clientServices: clientServicesEn,
+  categoryLabels: {
+    site: "Sito Web",
+    erp: "Sistema ERP",
+    sistema: "Sistema Web",
+    app: "Applicazione",
+  },
+};
+
+export const itPatch: LocalePatch = deepMerge(enPatch as Record<string, unknown>, {
+  nav: [
+    { href: "/", label: "Home" },
+    { href: "/sobre", label: "Chi siamo" },
+    { href: "/servicos", label: "Servizi" },
+    { href: "/portfolio", label: "Progetti" },
+    { href: "/contato", label: "Contatto" },
+    { href: "/area-cliente", label: "Area Clienti" },
+  ],
+  hero: {
+    headlineBefore: "Ingegneria digitale per",
+    headlineAccent: "chi costruisce il futuro",
+    subheadline:
+      "Siti, ERP, app e infrastruttura con codice su misura, deploy in produzione e supporto continuo.",
+    primaryCtaLabel: "Richiedi preventivo",
+    secondaryCtaLabel: "Scrivi su WhatsApp",
+    cardSummaryLabel: "I nostri servizi",
+    cardFooterText: "Risposta rapida, preventivo trasparente e supporto continuo.",
+  },
+  cta: {
+    title: "Hai bisogno di aiuto con la tecnologia?",
+    text: "Sito, sistema o manutenzione, scrivimi su WhatsApp e troviamo la strada migliore.",
+    buttonText: "Scrivi su WhatsApp ora",
+  },
+  footer: {
+    quickLinksLabel: "Link rapidi",
+    contactLabel: "Contatto",
+    socialsLabel: "Social",
+  },
+  ui: itUi,
+}) as LocalePatch;

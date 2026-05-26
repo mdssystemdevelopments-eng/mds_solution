@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#0a1628"/>
+  <rect x="0" y="0" width="220" height="675" fill="#0d1f3c"/>
+  <rect x="24" y="32" width="80" height="8" rx="4" fill="#00b4d8"/>
+  <rect x="24" y="80" width="172" height="36" rx="8" fill="#00b4d8" opacity="0.2"/>
+  <rect x="24" y="130" width="172" height="12" rx="4" fill="#ffffff" opacity="0.15"/>
+  <rect x="24" y="158" width="140" height="12" rx="4" fill="#ffffff" opacity="0.08"/>
+  <rect x="24" y="186" width="160" height="12" rx="4" fill="#ffffff" opacity="0.08"/>
+  <rect x="260" y="32" width="400" height="28" rx="6" fill="#ffffff" opacity="0.06"/>
+  <rect x="260" y="80" width="280" height="140" rx="12" fill="#132a4a"/>
+  <rect x="280" y="110" width="120" height="80" rx="6" fill="#00b4d8" opacity="0.3"/>
+  <rect x="420" y="110" width="100" height="12" rx="4" fill="#ffffff" opacity="0.4"/>
+  <rect x="420" y="130" width="80" height="8" rx="4" fill="#ffffff" opacity="0.2"/>
+  <rect x="560" y="80" width="280" height="140" rx="12" fill="#132a4a"/>
+  <path d="M580 180 L620 140 L660 160 L700 120 L740 150 L800 180" stroke="#00b4d8" stroke-width="3" fill="none"/>
+  <rect x="860" y="80" width="280" height="140" rx="12" fill="#132a4a"/>
+  <rect x="880" y="120" width="60" height="60" rx="30" fill="none" stroke="#00b4d8" stroke-width="8" opacity="0.6"/>
+  <rect x="260" y="240" width="880" height="380" rx="12" fill="#132a4a"/>
+  <rect x="280" y="270" width="200" height="12" rx="4" fill="#00b4d8" opacity="0.5"/>
+  <rect x="280" y="300" width="840" height="8" rx="4" fill="#ffffff" opacity="0.06"/>
+  <rect x="280" y="324" width="840" height="8" rx="4" fill="#ffffff" opacity="0.04"/>
+  <rect x="280" y="348" width="840" height="8" rx="4" fill="#ffffff" opacity="0.04"/>
+  <rect x="280" y="372" width="840" height="8" rx="4" fill="#ffffff" opacity="0.04"/>
+  <rect x="280" y="396" width="840" height="8" rx="4" fill="#ffffff" opacity="0.04"/>
+  <text x="280" y="260" fill="#00b4d8" font-family="system-ui,sans-serif" font-size="14" font-weight="600">Nexus ERP  Dashboard</text>
+</svg>

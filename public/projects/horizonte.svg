@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#fafafa"/>
+  <rect x="0" y="0" width="1200" height="56" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="40" y="18" width="120" height="20" rx="4" fill="#00b4d8"/>
+  <rect x="800" y="16" width="80" height="24" rx="6" fill="#f3f4f6"/>
+  <rect x="900" y="16" width="80" height="24" rx="6" fill="#f3f4f6"/>
+  <rect x="1000" y="16" width="100" height="24" rx="6" fill="#00b4d8"/>
+  <rect x="0" y="56" width="1200" height="280" fill="#0a1628"/>
+  <text x="80" y="180" fill="#ffffff" font-family="system-ui,sans-serif" font-size="36" font-weight="700">Encontre seu im�vel ideal</text>
+  <text x="80" y="220" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="16">200+ propriedades � Tour 360�</text>
+  <rect x="80" y="250" width="400" height="44" rx="8" fill="#ffffff" opacity="0.1"/>
+  <rect x="340" y="120" width="400" height="280" rx="12" fill="#1e293b" opacity="0.5"/>
+  <rect x="560" y="380" width="260" height="200" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="580" y="400" width="220" height="120" rx="8" fill="#e2e8f0"/>
+  <rect x="580" y="530" width="140" height="10" rx="4" fill="#374151"/>
+  <rect x="580" y="548" width="80" height="8" rx="4" fill="#9ca3af"/>
+  <rect x="860" y="380" width="260" height="200" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="880" y="400" width="220" height="120" rx="8" fill="#e2e8f0"/>
+  <rect x="140" y="380" width="260" height="200" rx="12" fill="#ffffff" stroke="#e5e7eb"/>
+  <rect x="160" y="400" width="220" height="120" rx="8" fill="#e2e8f0"/>
+</svg>

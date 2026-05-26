@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#111827"/>
+  <rect x="40" y="40" width="1120" height="48" rx="8" fill="#1f2937"/>
+  <rect x="60" y="56" width="200" height="16" rx="4" fill="#00b4d8"/>
+  <rect x="40" y="110" width="360" height="520" rx="12" fill="#1f2937"/>
+  <rect x="60" y="130" width="120" height="10" rx="4" fill="#6b7280"/>
+  <rect x="60" y="160" width="320" height="60" rx="8" fill="#374151"/>
+  <rect x="60" y="240" width="320" height="60" rx="8" fill="#374151"/>
+  <rect x="60" y="320" width="320" height="60" rx="8" fill="#00b4d8" opacity="0.2"/>
+  <rect x="420" y="110" width="740" height="240" rx="12" fill="#1f2937"/>
+  <rect x="440" y="140" width="180" height="80" rx="8" fill="#065f46" opacity="0.4"/>
+  <text x="460" y="190" fill="#34d399" font-family="system-ui,sans-serif" font-size="28" font-weight="700">847</text>
+  <text x="460" y="210" fill="#6b7280" font-family="system-ui,sans-serif" font-size="12">Itens em estoque</text>
+  <rect x="640" y="140" width="180" height="80" rx="8" fill="#92400e" opacity="0.3"/>
+  <text x="660" y="190" fill="#fbbf24" font-family="system-ui,sans-serif" font-size="28" font-weight="700">12</text>
+  <text x="660" y="210" fill="#6b7280" font-family="system-ui,sans-serif" font-size="12">Alertas</text>
+  <rect x="840" y="140" width="180" height="80" rx="8" fill="#1e3a8a" opacity="0.4"/>
+  <text x="860" y="190" fill="#60a5fa" font-family="system-ui,sans-serif" font-size="28" font-weight="700">5</text>
+  <text x="860" y="210" fill="#6b7280" font-family="system-ui,sans-serif" font-size="12">Dep�sitos</text>
+  <rect x="420" y="370" width="740" height="260" rx="12" fill="#1f2937"/>
+  <rect x="440" y="400" width="700" height="200" rx="8" fill="#374151" opacity="0.5"/>
+  <rect x="460" y="480" width="40" height="100" rx="4" fill="#00b4d8" opacity="0.6"/>
+  <rect x="520" y="440" width="40" height="140" rx="4" fill="#00b4d8" opacity="0.8"/>
+  <rect x="580" y="460" width="40" height="120" rx="4" fill="#00b4d8" opacity="0.5"/>
+  <rect x="640" y="420" width="40" height="160" rx="4" fill="#00b4d8"/>
+  <rect x="700" y="450" width="40" height="130" rx="4" fill="#00b4d8" opacity="0.7"/>
+</svg>

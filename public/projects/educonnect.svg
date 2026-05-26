@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none">
+  <rect width="1200" height="675" fill="#f8fafc"/>
+  <rect x="0" y="0" width="1200" height="64" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="40" y="20" width="140" height="24" rx="4" fill="#6366f1"/>
+  <rect x="0" y="64" width="240" height="611" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="24" y="90" width="192" height="36" rx="8" fill="#eef2ff"/>
+  <rect x="24" y="140" width="192" height="12" rx="4" fill="#cbd5e1"/>
+  <rect x="24" y="164" width="160" height="12" rx="4" fill="#e2e8f0"/>
+  <rect x="24" y="188" width="180" height="12" rx="4" fill="#e2e8f0"/>
+  <rect x="260" y="90" width="900" height="200" rx="12" fill="#6366f1" opacity="0.1"/>
+  <text x="290" y="150" fill="#312e81" font-family="system-ui,sans-serif" font-size="32" font-weight="700">Portal do Aluno</text>
+  <text x="290" y="185" fill="#64748b" font-family="system-ui,sans-serif" font-size="16">Matr�culas � Boletim � Biblioteca</text>
+  <rect x="260" y="310" width="280" height="160" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="280" y="340" width="80" height="80" rx="40" fill="#6366f1" opacity="0.2"/>
+  <rect x="380" y="350" width="140" height="12" rx="4" fill="#334155"/>
+  <rect x="380" y="372" width="100" height="8" rx="4" fill="#94a3b8"/>
+  <rect x="560" y="310" width="280" height="160" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="580" y="340" width="240" height="100" rx="8" fill="#f1f5f9"/>
+  <rect x="860" y="310" width="300" height="160" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="880" y="340" width="260" height="12" rx="4" fill="#22c55e" opacity="0.5"/>
+  <rect x="880" y="362" width="200" height="12" rx="4" fill="#e2e8f0"/>
+  <rect x="260" y="490" width="900" height="160" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+</svg>
