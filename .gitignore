@@ -34,8 +34,14 @@ yarn-error.log*
 # vercel
 .vercel
 
-# assets locais / vídeos grandes (não versionar)
-*.mp4
+# vídeos de rascunho na raiz do projeto (não versionar)
+/*.mp4
+/*.webm
+
+# vídeos do site em public/ (necessários em produção)
+!public/logo-anim.mp4
+!public/logo-anim.webm
+!public/wallpaper.mp4
 /*.png
 "Area do cliente.png"
 "ChatGPT Image*.png"

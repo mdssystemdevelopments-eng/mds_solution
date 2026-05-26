@@ -43,6 +43,32 @@ export function HeroLogoVideo() {
     return () => mq.removeEventListener("change", apply);
   }, []);
 
+  useEffect(() => {
+    if (!pageReady || reduceMotion || failed) return;
+    const v = videoRef.current;
+    if (!v) return;
+
+    v.muted = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+
+    const tryPlay = () => {
+      void v.play().catch(() => {});
+    };
+
+    tryPlay();
+    v.addEventListener("canplay", tryPlay);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tryPlay();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      v.removeEventListener("canplay", tryPlay);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [pageReady, reduceMotion, failed]);
+
   useLayoutEffect(() => {
     const v = videoRef.current;
     const root = containerRef.current;
@@ -59,7 +85,7 @@ export function HeroLogoVideo() {
     if (v.readyState >= 2) syncBlend();
 
     return () => v.removeEventListener("loadeddata", syncBlend);
-  }, [failed, reduceMotion]);
+  }, [failed, reduceMotion, pageReady]);
 
   if (!pageReady) {
     return <div className="hero__logo-media hero__logo-media--placeholder" aria-hidden />;
@@ -93,8 +119,8 @@ export function HeroLogoVideo() {
         onError={() => setFailed(true)}
         suppressHydrationWarning
       >
-        <source src="/logo-anim.webm?v=3" type="video/webm" />
-        <source src="/logo-anim.mp4?v=3" type="video/mp4" />
+        <source src="/logo-anim.mp4?v=4" type="video/mp4" />
+        <source src="/logo-anim.webm?v=4" type="video/webm" />
       </video>
     </div>
   );
