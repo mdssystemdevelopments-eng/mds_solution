@@ -77,8 +77,8 @@ export function HeroLogoVideo() {
 
     const syncBlend = () => {
       const src = v.currentSrc || "";
-      const useBlend = src.includes(".mp4") && !src.includes(".webm");
-      root.classList.toggle("hero__logo-media--blend", useBlend);
+      // Só WebM costuma ter fundo transparente; MP4 com blend vira caixa preta.
+      root.classList.toggle("hero__logo-media--blend", src.includes(".webm"));
     };
 
     syncBlend();
@@ -120,8 +120,8 @@ export function HeroLogoVideo() {
         onError={() => setFailed(true)}
         suppressHydrationWarning
       >
-        <source src={`${LOGO_VIDEO_MP4}?v=6`} type="video/mp4" />
-        <source src={`${LOGO_VIDEO_WEBM}?v=6`} type="video/webm" />
+        <source src={`${LOGO_VIDEO_WEBM}?v=7`} type="video/webm" />
+        <source src={`${LOGO_VIDEO_MP4}?v=7`} type="video/mp4" />
       </video>
     </div>
   );

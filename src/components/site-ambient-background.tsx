@@ -5,11 +5,12 @@ import { useVideoLoopFade } from "@/hooks/use-video-loop-fade";
 import { WALLPAPER_VIDEO } from "@/lib/video-urls";
 
 const POSTER = "/wallpaper-cyber-eye.png";
+const FALLBACK_VIDEO = "/wallpaper-fallback.mp4";
 
 export function SiteAmbientBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [src, setSrc] = useState(WALLPAPER_VIDEO);
   const [failed, setFailed] = useState(false);
-  const src = WALLPAPER_VIDEO;
 
   useVideoLoopFade(videoRef, !failed, 0.85);
 
@@ -40,6 +41,14 @@ export function SiteAmbientBackground() {
     };
   }, [failed, src]);
 
+  const handleError = () => {
+    if (src !== FALLBACK_VIDEO && src === WALLPAPER_VIDEO) {
+      setSrc(FALLBACK_VIDEO);
+      return;
+    }
+    setFailed(true);
+  };
+
   return (
     <div
       className="video-bg"
@@ -59,7 +68,7 @@ export function SiteAmbientBackground() {
           loop
           playsInline
           preload="auto"
-          onError={() => setFailed(true)}
+          onError={handleError}
           suppressHydrationWarning
         />
       )}

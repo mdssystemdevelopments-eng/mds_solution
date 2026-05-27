@@ -42,10 +42,13 @@ yarn-error.log*
 !public/logo-anim.mp4
 !public/logo-anim.webm
 !public/wallpaper.mp4
+!public/wallpaper-fallback.mp4
+
+# PNGs na raiz do repo (rascunhos) — não versionar
 /*.png
-"Area do cliente.png"
-"ChatGPT Image*.png"
-Contato.png
-Projetos.png
-Serviços.png
-Sobre nos.png
+/Area do cliente.png
+/ChatGPT Image*.png
+/Contato.png
+/Projetos.png
+/Serviços.png
+/Sobre nos.png
