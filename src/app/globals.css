@@ -623,6 +623,9 @@ body:has(.page-bg) {
   align-items: center;
   gap: 0.45rem;
   justify-self: end;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 55;
 }
 
 .header__mobile-tools {
@@ -662,8 +665,30 @@ body:has(.page-bg) {
 }
 
 .lang-switch__flag {
-  font-size: 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
+}
+
+.flag-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flag-icon__img {
+  display: block;
+  width: 1.35rem;
+  height: auto;
+  border-radius: 3px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.flag-icon__emoji {
+  display: none;
 }
 
 .lang-switch__menu {

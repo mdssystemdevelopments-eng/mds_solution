@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FlagIcon } from "@/components/flag-icon";
 import { LOCALES, type Locale } from "@/i18n/config";
 import { useLocaleContext } from "@/components/locale-provider";
 
@@ -43,7 +44,7 @@ export function LanguageSwitcher() {
         onClick={() => setOpen((v) => !v)}
       >
         <span className="lang-switch__flag" aria-hidden>
-          {current.flag}
+          <FlagIcon iso={current.flagIso} emoji={current.flag} label={current.label} />
         </span>
       </button>
 
@@ -59,7 +60,7 @@ export function LanguageSwitcher() {
                   onClick={() => pick(item.code)}
                 >
                   <span className="lang-switch__flag" aria-hidden>
-                    {item.flag}
+                    <FlagIcon iso={item.flagIso} emoji={item.flag} label={item.label} size={20} />
                   </span>
                   <span className="lang-switch__label">{item.label}</span>
                 </button>

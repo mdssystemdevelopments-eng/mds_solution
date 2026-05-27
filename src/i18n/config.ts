@@ -22,27 +22,29 @@ export type LocaleMeta = {
   code: Locale;
   label: string;
   flag: string;
+  /** Código ISO do país para imagem (funciona no Windows/desktop) */
+  flagIso: string;
   dir: "ltr" | "rtl";
   /** Idioma usado quando não há tradução dedicada */
   fallback?: Locale;
 };
 
 export const LOCALES: LocaleMeta[] = [
-  { code: "pt-BR", label: "Português (Brasil)", flag: "🇧🇷", dir: "ltr" },
-  { code: "en", label: "English", flag: "🇺🇸", dir: "ltr" },
-  { code: "es", label: "Español", flag: "🇪🇸", dir: "ltr" },
-  { code: "fr", label: "Français", flag: "🇫🇷", dir: "ltr" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪", dir: "ltr" },
-  { code: "it", label: "Italiano", flag: "🇮🇹", dir: "ltr" },
-  { code: "zh", label: "中文", flag: "🇨🇳", dir: "ltr", fallback: "en" },
-  { code: "ja", label: "日本語", flag: "🇯🇵", dir: "ltr", fallback: "en" },
-  { code: "ko", label: "한국어", flag: "🇰🇷", dir: "ltr", fallback: "en" },
-  { code: "ar", label: "العربية", flag: "🇸🇦", dir: "rtl", fallback: "en" },
-  { code: "ru", label: "Русский", flag: "🇷🇺", dir: "ltr", fallback: "en" },
-  { code: "hi", label: "हिन्दी", flag: "🇮🇳", dir: "ltr", fallback: "en" },
-  { code: "nl", label: "Nederlands", flag: "🇳🇱", dir: "ltr", fallback: "en" },
-  { code: "pl", label: "Polski", flag: "🇵🇱", dir: "ltr", fallback: "en" },
-  { code: "tr", label: "Türkçe", flag: "🇹🇷", dir: "ltr", fallback: "en" },
+  { code: "pt-BR", label: "Português (Brasil)", flag: "🇧🇷", flagIso: "br", dir: "ltr" },
+  { code: "en", label: "English", flag: "🇺🇸", flagIso: "us", dir: "ltr" },
+  { code: "es", label: "Español", flag: "🇪🇸", flagIso: "es", dir: "ltr" },
+  { code: "fr", label: "Français", flag: "🇫🇷", flagIso: "fr", dir: "ltr" },
+  { code: "de", label: "Deutsch", flag: "🇩🇪", flagIso: "de", dir: "ltr" },
+  { code: "it", label: "Italiano", flag: "🇮🇹", flagIso: "it", dir: "ltr" },
+  { code: "zh", label: "中文", flag: "🇨🇳", flagIso: "cn", dir: "ltr", fallback: "en" },
+  { code: "ja", label: "日本語", flag: "🇯🇵", flagIso: "jp", dir: "ltr", fallback: "en" },
+  { code: "ko", label: "한국어", flag: "🇰🇷", flagIso: "kr", dir: "ltr", fallback: "en" },
+  { code: "ar", label: "العربية", flag: "🇸🇦", flagIso: "sa", dir: "rtl", fallback: "en" },
+  { code: "ru", label: "Русский", flag: "🇷🇺", flagIso: "ru", dir: "ltr", fallback: "en" },
+  { code: "hi", label: "हिन्दी", flag: "🇮🇳", flagIso: "in", dir: "ltr", fallback: "en" },
+  { code: "nl", label: "Nederlands", flag: "🇳🇱", flagIso: "nl", dir: "ltr", fallback: "en" },
+  { code: "pl", label: "Polski", flag: "🇵🇱", flagIso: "pl", dir: "ltr", fallback: "en" },
+  { code: "tr", label: "Türkçe", flag: "🇹🇷", flagIso: "tr", dir: "ltr", fallback: "en" },
 ];
 
 export function isLocale(value: string | undefined | null): value is Locale {

@@ -1,3 +1,23 @@
+# Vídeos não aparecem no site
+
+## ATENÇÃO: deploy do commit errado
+
+Se o log da Vercel mostrar:
+
+`Cloning ... (Commit: c7d74d5)`
+
+esse commit **NÃO tem** os arquivos `logo-anim.mp4` nem `wallpaper.mp4`.
+
+Use um destes commits na branch `main`:
+
+- `3f0bd95` — fix: incluir vídeos MP4 em produção
+- `2170c96` ou mais recente
+
+Na Vercel → **Deployments** → escolha deploy com commit **`3f0bd95` ou mais novo** → **Redeploy**,  
+ou **Deploy Hook** na branch `main` (pega o último commit automaticamente).
+
+---
+
 # Vídeos não aparecem no site (Vercel bloqueia Redeploy)
 
 O site no ar **não tem** os arquivos `logo-anim.mp4` e `wallpaper.mp4` porque o deploy com esses arquivos **nunca foi publicado** (bloqueio do autor do commit).
