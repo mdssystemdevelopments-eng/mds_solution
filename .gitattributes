@@ -1,1 +1,2 @@
-public/wallpaper.mp4 filter=lfs diff=lfs merge=lfs -text
+# wallpaper.mp4 versionado sem LFS (~1,5 MB) para deploy na Vercel
+# Vídeo grande (252 MB): use NEXT_PUBLIC_WALLPAPER_VIDEO_URL com URL externa
