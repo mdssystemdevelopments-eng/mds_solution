@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BrandLogo } from "@/components/brand-logo";
 import { useVideoLoopFade } from "@/hooks/use-video-loop-fade";
+import { LOGO_VIDEO_MP4, LOGO_VIDEO_WEBM } from "@/lib/video-urls";
 
 const LOGO_LOOP_DURATION_S = 5.03;
 
@@ -119,8 +120,8 @@ export function HeroLogoVideo() {
         onError={() => setFailed(true)}
         suppressHydrationWarning
       >
-        <source src="/logo-anim.mp4?v=5" type="video/mp4" />
-        <source src="/logo-anim.webm?v=5" type="video/webm" />
+        <source src={`${LOGO_VIDEO_MP4}?v=6`} type="video/mp4" />
+        <source src={`${LOGO_VIDEO_WEBM}?v=6`} type="video/webm" />
       </video>
     </div>
   );

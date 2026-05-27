@@ -2,19 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useVideoLoopFade } from "@/hooks/use-video-loop-fade";
+import { WALLPAPER_VIDEO } from "@/lib/video-urls";
 
-const DEFAULT_VIDEO = "/wallpaper.mp4";
 const POSTER = "/wallpaper-cyber-eye.png";
-
-function wallpaperSrc(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_WALLPAPER_VIDEO_URL?.trim();
-  return fromEnv || DEFAULT_VIDEO;
-}
 
 export function SiteAmbientBackground() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
-  const src = wallpaperSrc();
+  const src = WALLPAPER_VIDEO;
 
   useVideoLoopFade(videoRef, !failed, 0.85);
 
