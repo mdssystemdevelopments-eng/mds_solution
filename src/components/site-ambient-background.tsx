@@ -12,7 +12,7 @@ export function SiteAmbientBackground() {
   const [src, setSrc] = useState(WALLPAPER_VIDEO);
   const [failed, setFailed] = useState(false);
 
-  useVideoLoopFade(videoRef, !failed, 0.85);
+  useVideoLoopFade(videoRef, !failed, 1.6, { minOpacity: 0.68 });
 
   useEffect(() => {
     if (failed) return;
@@ -65,7 +65,6 @@ export function SiteAmbientBackground() {
           poster={POSTER}
           autoPlay
           muted
-          loop
           playsInline
           preload="auto"
           onError={handleError}

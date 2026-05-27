@@ -14,7 +14,9 @@ export function HeroLogoVideo() {
   const [reduceMotion, setReduceMotion] = useState(false);
   const [pageReady, setPageReady] = useState(false);
 
-  useVideoLoopFade(videoRef, pageReady && !reduceMotion && !failed);
+  useVideoLoopFade(videoRef, pageReady && !reduceMotion && !failed, 0.8, {
+    minOpacity: 0.78,
+  });
 
   useEffect(() => {
     const root = document.querySelector(".site-root");
@@ -112,7 +114,6 @@ export function HeroLogoVideo() {
         width={800}
         height={992}
         autoPlay
-        loop
         muted
         playsInline
         preload={pageReady ? "auto" : "none"}

@@ -38,6 +38,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           }}
         />
         <link rel="preload" href="/wallpaper.mp4" as="video" type="video/mp4" />
+        <link rel="preload" href="/logo-anim.webm" as="video" type="video/webm" />
+        <link rel="preload" href="/logo-anim.mp4" as="video" type="video/mp4" />
       </head>
       <body className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} min-h-screen font-sans notranslate`} translate="no">
         {children}

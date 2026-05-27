@@ -3,12 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { LoaderPanel } from "@/components/loader-panel";
+import { waitForPageReady } from "@/lib/wait-for-page-ready";
 
 type Phase = "hidden" | "show" | "hide";
-
-function now() {
-  return typeof performance !== "undefined" ? performance.now() : Date.now();
-}
 
 function getSiteRoot() {
   return document.querySelector<HTMLElement>(".site-root");
@@ -18,36 +15,30 @@ function getBootEl() {
   return document.getElementById("boot-loader");
 }
 
-async function waitForStability(maxMs: number) {
-  const start = now();
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const fonts = (document as any).fonts;
-    if (fonts?.ready) {
-      await Promise.race([fonts.ready, new Promise((r) => setTimeout(r, 350))]);
-    }
-  } catch {
-    /* ignore */
-  }
-
-  await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
-
-  const elapsed = now() - start;
-  if (elapsed < maxMs) {
-    await new Promise((r) => setTimeout(r, maxMs - elapsed));
-  }
-}
-
-function hideBootLoader() {
+async function hideBootLoader() {
   const boot = getBootEl();
-  if (!boot) return;
+  if (!boot) {
+    getSiteRoot()?.classList.remove("is-booting");
+    return;
+  }
+
+  /* Libera o DOM (hero/logo) mas mantém overlay até vídeos críticos estarem prontos */
+  getSiteRoot()?.classList.remove("is-booting");
+
+  await waitForPageReady({
+    minMs: 400,
+    maxMs: 25000,
+    includeWindowLoad: false,
+    waitVideos: true,
+    waitImages: true,
+  });
+
   boot.classList.add("page-loader--hide");
-  return new Promise<void>((resolve) => {
+  await new Promise<void>((resolve) => {
     setTimeout(() => {
-      getSiteRoot()?.classList.remove("is-booting");
       boot.remove();
       resolve();
-    }, 280);
+    }, 320);
   });
 }
 
@@ -55,24 +46,24 @@ export function PageLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  /** Primeira carga: só controla o #boot-loader (sem 2º overlay) */
   const [routePhase, setRoutePhase] = useState<Phase>("hidden");
-  const shownAtRef = useRef<number>(now());
   const lastKeyRef = useRef<string>("");
   const isFirstRouteRef = useRef(true);
 
+  /* Primeira visita: boot-loader no layout */
   useEffect(() => {
-    const minShowMs = 450;
     let cancelled = false;
 
     const run = async () => {
-      shownAtRef.current = now();
-      await waitForStability(1200);
+      await waitForPageReady({
+        minMs: 600,
+        maxMs: 30000,
+        includeWindowLoad: true,
+        waitVideos: true,
+        waitImages: true,
+      });
 
-      const remaining = Math.max(0, minShowMs - (now() - shownAtRef.current));
-      if (remaining) await new Promise((r) => setTimeout(r, remaining));
       if (cancelled) return;
-
       await hideBootLoader();
     };
 
@@ -82,6 +73,7 @@ export function PageLoader() {
     };
   }, []);
 
+  /* Navegação entre páginas */
   useEffect(() => {
     const key = `${pathname}?${searchParams?.toString() ?? ""}`;
     if (isFirstRouteRef.current) {
@@ -92,25 +84,28 @@ export function PageLoader() {
     if (lastKeyRef.current === key) return;
     lastKeyRef.current = key;
 
-    const minShowMs = 200;
     let cancelled = false;
 
     const run = async () => {
       getSiteRoot()?.classList.add("is-booting");
-      shownAtRef.current = now();
       setRoutePhase("show");
 
-      await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
-      const remaining = Math.max(0, minShowMs - (now() - shownAtRef.current));
-      if (remaining) await new Promise((r) => setTimeout(r, remaining));
+      await waitForPageReady({
+        minMs: 500,
+        maxMs: 20000,
+        includeWindowLoad: false,
+        waitVideos: pathname === "/" || pathname === "",
+        waitImages: true,
+      });
+
       if (cancelled) return;
 
       setRoutePhase("hide");
-      setTimeout(() => {
-        if (cancelled) return;
-        getSiteRoot()?.classList.remove("is-booting");
-        setRoutePhase("hidden");
-      }, 220);
+      await new Promise<void>((r) => setTimeout(r, 280));
+      if (cancelled) return;
+
+      getSiteRoot()?.classList.remove("is-booting");
+      setRoutePhase("hidden");
     };
 
     void run();
