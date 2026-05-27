@@ -119,8 +119,8 @@ export function HeroLogoVideo() {
         onError={() => setFailed(true)}
         suppressHydrationWarning
       >
-        <source src="/logo-anim.mp4?v=4" type="video/mp4" />
-        <source src="/logo-anim.webm?v=4" type="video/webm" />
+        <source src="/logo-anim.mp4?v=5" type="video/mp4" />
+        <source src="/logo-anim.webm?v=5" type="video/webm" />
       </video>
     </div>
   );
