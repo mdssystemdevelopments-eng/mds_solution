@@ -1,18 +1,12 @@
 import { Router } from "express";
+import { validateContactInput } from "../contracts/contact.js";
 
 export const contactRouter = Router();
 
 contactRouter.post("/", async (req, res) => {
-  const name = String(req.body?.name ?? "").trim().slice(0, 120);
-  const email = String(req.body?.email ?? "").trim().slice(0, 200);
-  const body = String(req.body?.body ?? "").trim().slice(0, 8000);
-
-  if (!name || !email || !body) {
-    return res.status(400).json({ error: "Preencha nome, e-mail e mensagem." });
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: "E-mail inválido." });
-  }
+  const parsed = validateContactInput(req.body ?? {});
+  if (!parsed.ok) return res.status(400).json({ error: parsed.error });
+  const { name, email, body } = parsed.payload;
 
   console.info(`[contato] ${new Date().toISOString()} | ${name} <${email}>`);
 

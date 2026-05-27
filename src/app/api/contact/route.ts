@@ -1,30 +1,20 @@
 import { NextResponse } from "next/server";
 import { getSiteContent } from "@/lib/site-content";
-
-type Body = { name?: string; email?: string; body?: string };
+import { validateContactInput } from "@/modules/shared/contracts/contact";
 
 export async function POST(req: Request) {
   const { contact, contactPage } = await getSiteContent();
 
-  let json: Body;
+  let json: unknown;
   try {
     json = await req.json();
   } catch {
     return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
   }
 
-  const name = String(json.name || "").trim().slice(0, 120);
-  const email = String(json.email || "").trim().slice(0, 200);
-  const body = String(json.body || "").trim().slice(0, 8000);
-
-  if (!name || !email || !body) {
-    return NextResponse.json({ error: "Preencha nome, e-mail e mensagem." }, { status: 400 });
-  }
-
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (!emailOk) {
-    return NextResponse.json({ error: "E-mail inválido." }, { status: 400 });
-  }
+  const parsed = validateContactInput((json ?? {}) as Record<string, unknown>);
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const { name, email, body } = parsed.payload;
 
   const line = `[contato site] ${new Date().toISOString()} | ${name} <${email}> | ${body.replace(/\s+/g, " ")}`;
   console.info(line);

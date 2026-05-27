@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ASSETS } from "@/modules/shared/constants/assets";
 
 type Props = {
   variant: "nav" | "hero" | "footer";
@@ -7,7 +8,7 @@ type Props = {
 };
 
 /** Logo oficial — arquivo em /public/logo-mds.png */
-const LOGO_SRC = "/logo-mds.png";
+const LOGO_SRC = ASSETS.logos.main;
 
 const dim = {
   nav: { width: 220, height: 64, className: "brand-logo brand-logo--nav" },

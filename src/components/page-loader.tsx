@@ -15,6 +15,7 @@ function getBootEl() {
   return document.getElementById("boot-loader");
 }
 
+/** Remove boot só depois do fade; site só aparece quando o overlay sumir */
 async function hideBootLoader() {
   const boot = getBootEl();
   if (!boot) {
@@ -22,21 +23,11 @@ async function hideBootLoader() {
     return;
   }
 
-  /* Libera o DOM (hero/logo) mas mantém overlay até vídeos críticos estarem prontos */
-  getSiteRoot()?.classList.remove("is-booting");
-
-  await waitForPageReady({
-    minMs: 400,
-    maxMs: 25000,
-    includeWindowLoad: false,
-    waitVideos: true,
-    waitImages: true,
-  });
-
   boot.classList.add("page-loader--hide");
   await new Promise<void>((resolve) => {
     setTimeout(() => {
       boot.remove();
+      getSiteRoot()?.classList.remove("is-booting");
       resolve();
     }, 320);
   });
@@ -50,7 +41,6 @@ export function PageLoader() {
   const lastKeyRef = useRef<string>("");
   const isFirstRouteRef = useRef(true);
 
-  /* Primeira visita: boot-loader no layout */
   useEffect(() => {
     let cancelled = false;
 
@@ -73,7 +63,6 @@ export function PageLoader() {
     };
   }, []);
 
-  /* Navegação entre páginas */
   useEffect(() => {
     const key = `${pathname}?${searchParams?.toString() ?? ""}`;
     if (isFirstRouteRef.current) {

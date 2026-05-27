@@ -34,9 +34,11 @@ yarn-error.log*
 # vercel
 .vercel
 
-# vídeos de rascunho na raiz do projeto (não versionar)
+# vídeos de rascunho (não versionar)
 /*.mp4
 /*.webm
+/workspace-assets/raw/**/*.mp4
+/workspace-assets/raw/**/*.webm
 
 # vídeos do site em public/ (necessários em produção)
 !public/logo-anim.mp4
@@ -44,11 +46,6 @@ yarn-error.log*
 !public/wallpaper.mp4
 !public/wallpaper-fallback.mp4
 
-# PNGs na raiz do repo (rascunhos) — não versionar
+# PNGs de rascunho (não versionar)
 /*.png
-/Area do cliente.png
-/ChatGPT Image*.png
-/Contato.png
-/Projetos.png
-/Serviços.png
-/Sobre nos.png
+/workspace-assets/raw/**/*.png

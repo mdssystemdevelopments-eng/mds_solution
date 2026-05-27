@@ -52,7 +52,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <div className="site-root is-booting" lang={localeToHtmlLang(locale)} dir={meta.dir}>
       <style
         dangerouslySetInnerHTML={{
-          __html: `.site-root.is-booting .site,.site-root.is-booting .video-bg{opacity:0!important;visibility:hidden!important;pointer-events:none!important}#boot-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#05080f}`,
+          __html: `.site-root.is-booting .site,.site-root.is-booting .video-bg,.site-root.is-booting .hero__logo-media,.site-root.is-booting .hero__logo-video,.site-root.is-booting .hero__preview--logo{opacity:0!important;visibility:hidden!important;pointer-events:none!important}`,
         }}
       />
       <BootLoader />

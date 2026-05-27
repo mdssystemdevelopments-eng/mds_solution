@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00d4ff" />
+      <stop offset="100%" stop-color="#2b7fff" />
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="29" fill="#071121" stroke="url(#g)" stroke-width="2.5" />
+  <text
+    x="32"
+    y="39"
+    text-anchor="middle"
+    font-family="Segoe UI, Arial, sans-serif"
+    font-size="20"
+    font-weight="700"
+    letter-spacing="0.6"
+    fill="url(#g)"
+  >
+    MDS
+  </text>
+</svg>

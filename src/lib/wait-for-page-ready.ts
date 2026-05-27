@@ -81,10 +81,30 @@ async function waitForImages(root: ParentNode, timeoutMs: number) {
   ]);
 }
 
-/** Vídeos de fundo + logo (quando já estiverem no DOM). */
-export function getCriticalVideos() {
+function waitForImage(img: HTMLImageElement | null, timeoutMs: number) {
+  if (!img) return Promise.resolve();
+  if (img.complete && img.naturalHeight > 0) return Promise.resolve();
+
+  return new Promise<void>((resolve) => {
+    const finish = () => {
+      cleanup();
+      resolve();
+    };
+    const cleanup = () => {
+      img.removeEventListener("load", finish);
+      img.removeEventListener("error", finish);
+      clearTimeout(timer);
+    };
+    img.addEventListener("load", finish, { once: true });
+    img.addEventListener("error", finish, { once: true });
+    const timer = setTimeout(finish, timeoutMs);
+  });
+}
+
+/** Imagem de fundo da home + logo animada (quando já estiverem no DOM). */
+export function getCriticalHomeMedia() {
   return {
-    wallpaper: document.querySelector<HTMLVideoElement>(".video-bg__el"),
+    wallpaper: document.querySelector<HTMLImageElement>(".video-bg__image"),
     logo: document.querySelector<HTMLVideoElement>(".hero__logo-video"),
   };
 }
@@ -94,7 +114,7 @@ export type WaitForPageReadyOptions = {
   maxMs?: number;
   /** Primeira carga: espera window.load */
   includeWindowLoad?: boolean;
-  /** Espera wallpaper + logo (se existirem) */
+  /** Espera imagem de fundo da home + logo (se existirem) */
   waitVideos?: boolean;
   /** Espera imagens dentro de main */
   waitImages?: boolean;
@@ -123,10 +143,10 @@ export async function waitForPageReady(opts: WaitForPageReadyOptions = {}) {
   await Promise.race([Promise.all(tasks), waitMs(maxMs)]);
 
   if (waitVideos) {
-    const { wallpaper, logo } = getCriticalVideos();
+    const { wallpaper, logo } = getCriticalHomeMedia();
     await Promise.race([
       Promise.all([
-        waitForVideo(wallpaper, 15000),
+        waitForImage(wallpaper, 12000),
         waitForVideo(logo, 10000),
       ]),
       waitMs(maxMs),

@@ -1,4 +1,6 @@
-const LOGO_SRC = "/logo-mds.png";
+import { ASSETS } from "@/modules/shared/constants/assets";
+
+const LOGO_SRC = ASSETS.logos.main;
 
 export function LoaderPanel() {
   return (

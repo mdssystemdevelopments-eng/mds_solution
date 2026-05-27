@@ -2,17 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { apiFetch } from "@/lib/api-fetch";
-
-type ProductRow = {
-  id: string;
-  name: string;
-  slug: string;
-  active: boolean;
-  price_cents: number | null;
-  currency: string;
-  updated_at: string;
-};
+import type { ProductPayload, ProductRow } from "@/modules/admin/products/types";
+import {
+  createProduct,
+  deleteProduct,
+  listProducts,
+  updateProduct,
+} from "@/modules/admin/products/services/products-api";
+import { AdminListToolbar } from "@/modules/admin/ui/admin-list-toolbar";
+import { slugify } from "@/modules/shared/utils/slugify";
 
 function moneyFromCents(cents: number | null, currency: string) {
   if (cents == null) return "—";
@@ -22,16 +20,6 @@ function moneyFromCents(cents: number | null, currency: string) {
   } catch {
     return `${value.toFixed(2)} ${currency}`;
   }
-}
-
-function slugify(input: string) {
-  return input
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "")
-    .slice(0, 140);
 }
 
 export function ProductsAdmin() {
@@ -56,10 +44,7 @@ export function ProductsAdmin() {
   async function load() {
     setLoading(true);
     try {
-      const res = await apiFetch("/api/admin/products");
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Falha ao carregar");
-      setItems(json.items || []);
+      setItems(await listProducts());
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha ao carregar");
     } finally {
@@ -96,7 +81,7 @@ export function ProductsAdmin() {
   }
 
   async function save() {
-    const s = slug.trim() || slugify(name);
+    const s = slug.trim() || slugify(name, { maxLength: 140 });
     if (!name.trim()) return toast.error("Nome é obrigatório");
     if (!s) return toast.error("Slug inválido");
     const hasPrice = Boolean(price.trim());
@@ -107,7 +92,7 @@ export function ProductsAdmin() {
     }
 
     try {
-      const body = {
+      const body: ProductPayload = {
         name: name.trim(),
         slug: s,
         description: description.trim(),
@@ -118,22 +103,10 @@ export function ProductsAdmin() {
       };
 
       if (editing) {
-        const res = await apiFetch(`/api/admin/products/${editing.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json.error || "Falha ao salvar");
+        await updateProduct(editing.id, body);
         toast.success("Produto atualizado");
       } else {
-        const res = await apiFetch("/api/admin/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json.error || "Falha ao criar");
+        await createProduct(body);
         toast.success("Produto criado");
       }
       setOpen(false);
@@ -147,9 +120,7 @@ export function ProductsAdmin() {
     const ok = window.confirm(`Excluir "${p.name}"? Esta ação não pode ser desfeita.`);
     if (!ok) return;
     try {
-      const res = await apiFetch(`/api/admin/products/${p.id}`, { method: "DELETE" });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Falha ao excluir");
+      await deleteProduct(p.id);
       toast.success("Excluído");
       await load();
     } catch (e) {
@@ -159,34 +130,19 @@ export function ProductsAdmin() {
 
   return (
     <div className="rounded-2xl border border-zinc-800 bg-ink p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Produtos/Serviços</h1>
-          <p className="mt-1 text-sm text-zinc-400">CRUD básico (pronto para evoluir com imagens e categorias).</p>
-        </div>
-        <button
-          type="button"
-          onClick={startCreate}
-          className="rounded-xl bg-neon-blue px-4 py-2 text-sm font-bold text-ink hover:brightness-110"
-        >
-          Novo
-        </button>
+      <div>
+        <h1 className="text-2xl font-bold text-white">Produtos/Serviços</h1>
+        <p className="mt-1 text-sm text-zinc-400">CRUD básico (pronto para evoluir com imagens e categorias).</p>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar por nome ou slug…"
-          className="w-full rounded-xl border border-zinc-700 bg-ink-muted px-4 py-3 text-sm text-white outline-none focus:border-neon-blue sm:max-w-md"
+      <div className="mt-4">
+        <AdminListToolbar
+          query={q}
+          onQueryChange={setQ}
+          queryPlaceholder="Buscar por nome ou slug…"
+          onReload={load}
+          onCreate={startCreate}
         />
-        <button
-          type="button"
-          onClick={load}
-          className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-900/40"
-        >
-          Recarregar
-        </button>
       </div>
 
       <div className="mt-5 overflow-x-auto rounded-2xl border border-zinc-800">
@@ -279,7 +235,7 @@ export function ProductsAdmin() {
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
-                    if (!editing) setSlug(slugify(e.target.value));
+                    if (!editing) setSlug(slugify(e.target.value, { maxLength: 140 }));
                   }}
                   className="mt-1.5 w-full rounded-xl border border-zinc-700 bg-ink px-4 py-3 text-white outline-none focus:border-neon-blue"
                 />
@@ -288,7 +244,7 @@ export function ProductsAdmin() {
                 Slug
                 <input
                   value={slug}
-                  onChange={(e) => setSlug(slugify(e.target.value))}
+                  onChange={(e) => setSlug(slugify(e.target.value, { maxLength: 140 }))}
                   className="mt-1.5 w-full rounded-xl border border-zinc-700 bg-ink px-4 py-3 font-mono text-sm text-white outline-none focus:border-neon-blue"
                 />
               </label>

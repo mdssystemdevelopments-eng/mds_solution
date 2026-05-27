@@ -1,47 +1,73 @@
-# MDS Soluções Digitais — Site + CMS (Next.js + Supabase)
+# MDS Soluções Digitais — Site + CMS
 
 ## Stack
 
-- **Frontend**: Next.js (App Router) + React + TailwindCSS
-- **Backend**: API Routes do Next.js (Node.js)
-- **Banco / Auth / Realtime / Upload**: Supabase (Postgres + Auth + Storage + Realtime)
+- **Frontend**: Next.js 15 (App Router) + React 19 + Tailwind
+- **BFF**: API Routes em `src/app/api`
+- **API legada**: Express em `backend/` (Render)
+- **Dados**: Neon / Supabase / `data/site-content.json`
+
+## Documentação
+
+| Documento | Conteúdo |
+|-----------|----------|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Estrutura, domínios, decisões |
+| [docs/SMOKE-TEST.md](docs/SMOKE-TEST.md) | Checklist pós-refatoração |
+| [docs/API-CONTRACTS.md](docs/API-CONTRACTS.md) | Rotas e payloads |
+| [docs/REFACTORING-CHANGELOG.md](docs/REFACTORING-CHANGELOG.md) | O que mudou na refatoração |
+| [DEPLOY.md](DEPLOY.md) | Deploy Vercel + Render + Neon |
+| [docs/deploy/DEPLOY-AGORA.md](docs/deploy/DEPLOY-AGORA.md) | Re-deploy rápido quando Vercel bloqueia |
+| [docs/deploy/DEPLOY-VIDEO.md](docs/deploy/DEPLOY-VIDEO.md) | Troubleshooting de vídeos no deploy |
 
 ## Rodar localmente
 
-1) Instale dependências:
-
 ```bash
 npm install
+cp .env.example .env.local
+# Preencha Supabase e/ou ADMIN_* conforme modo desejado
+npm run dev:reset
 ```
 
-2) Crie `.env.local` (baseado em `.env.example`) e preencha:
+Site: `http://localhost:3000`  
+Admin: `http://localhost:3000/loginsolution`
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+## Estrutura modular (`src/modules`)
 
-3) No Supabase, execute o SQL em `supabase/schema.sql`.
-
-4) Crie um usuário no **Supabase Auth** (Email/Password) e marque como admin:
-
-- Inserir/atualizar em `public.profiles`:
-  - `user_id = <id do auth.users>`
-  - `role = 'admin'`
-
-5) Rode:
-
-```bash
-npm run dev
+```text
+src/modules/
+  admin/posts|products/   # types + services (CRUD)
+  admin/ui/               # componentes compartilhados
+  shared/constants/       # ASSETS (paths públicos)
+  shared/contracts/       # validação (contato)
+  shared/http/            # parseJson, erros API
+  shared/utils/           # slugify
 ```
+
+Componentes em `src/components` permanecem por compatibilidade; novas features devem preferir `src/modules`.
+
+## Organização da raiz
+
+- Arquivos de rascunho (imagens/vídeos de trabalho) ficam em `workspace-assets/raw/`.
+- Esses arquivos são ignorados no Git para manter o repositório limpo.
+
+## Scripts úteis
+
+| Comando | Uso |
+|---------|-----|
+| `npm run dev` | Desenvolvimento |
+| `npm run dev:reset` | Limpa `.next` e sobe na porta 3000 |
+| `npm run clean` | Remove cache `.next` |
+| `npm run build` | Build produção |
+| `npm run lint` | ESLint |
 
 ## Admin (CMS)
 
-- Login: `GET /loginsolution` (única rota de acesso ao login admin)
-- Dashboard: `GET /admin`
-- Conteúdo do site (JSON dinâmico): `GET /admin/conteudo`
-- Produtos/Serviços (CRUD): `GET /admin/produtos`
+- Login: `/loginsolution`
+- Dashboard: `/admin`
+- Conteúdo: `/admin/conteudo`
+- Posts: `/admin/posts`
+- Produtos: `/admin/produtos`
 
-## Realtime (atualização automática)
+## Realtime
 
-O site assina mudanças em `public.site_content` via Realtime e aplica `router.refresh()` automaticamente.  
-Após salvar no painel, o site público deve refletir as alterações sem F5.
-
+Com Supabase configurado, mudanças em `site_content` atualizam o site via `router.refresh()`.

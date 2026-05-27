@@ -4,26 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { apiFetch } from "@/lib/api-fetch";
-
-type PostRow = {
-  id: string;
-  title: string;
-  slug: string;
-  status: "draft" | "published";
-  updated_at: string;
-  published_at: string | null;
-};
-
-function slugify(input: string) {
-  return input
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "")
-    .slice(0, 200);
-}
+import type { PostPayload, PostRow } from "@/modules/admin/posts/types";
+import {
+  createPost,
+  deletePost,
+  getPostById,
+  listPosts,
+  updatePost,
+} from "@/modules/admin/posts/services/posts-api";
+import { AdminListToolbar } from "@/modules/admin/ui/admin-list-toolbar";
+import { slugify } from "@/modules/shared/utils/slugify";
 
 export function PostsAdmin() {
   const [items, setItems] = useState<PostRow[]>([]);
@@ -57,10 +47,7 @@ export function PostsAdmin() {
   async function load() {
     setLoading(true);
     try {
-      const res = await apiFetch("/api/admin/posts");
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Falha ao carregar");
-      setItems(json.items || []);
+      setItems(await listPosts());
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Falha ao carregar");
     } finally {
@@ -88,10 +75,7 @@ export function PostsAdmin() {
 
   async function startEdit(id: string) {
     try {
-      const res = await apiFetch(`/api/admin/posts/${id}`);
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Falha ao abrir");
-      const p = json.item as { title: string; slug: string; excerpt: string | null; status: "draft" | "published"; content_html: string };
+      const p = await getPostById(id);
       setEditingId(id);
       setTitle(p.title);
       setSlug(p.slug);
@@ -106,12 +90,12 @@ export function PostsAdmin() {
 
   async function save() {
     if (!title.trim()) return toast.error("Título é obrigatório");
-    const s = slug.trim() || slugify(title);
+    const s = slug.trim() || slugify(title, { maxLength: 200 });
     if (!s) return toast.error("Slug inválido");
     const content_html = editor?.getHTML() ?? "";
 
     try {
-      const body = {
+      const body: PostPayload = {
         title: title.trim(),
         slug: s,
         excerpt: excerpt.trim() || null,
@@ -120,22 +104,10 @@ export function PostsAdmin() {
       };
 
       if (editingId) {
-        const res = await apiFetch(`/api/admin/posts/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json.error || "Falha ao salvar");
+        await updatePost(editingId, body);
         toast.success("Post atualizado");
       } else {
-        const res = await apiFetch("/api/admin/posts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json.error || "Falha ao criar");
+        await createPost(body);
         toast.success("Post criado");
       }
 
@@ -150,9 +122,7 @@ export function PostsAdmin() {
     const ok = window.confirm(`Excluir "${p.title}"? Esta ação não pode ser desfeita.`);
     if (!ok) return;
     try {
-      const res = await apiFetch(`/api/admin/posts/${p.id}`, { method: "DELETE" });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || "Falha ao excluir");
+      await deletePost(p.id);
       toast.success("Excluído");
       await load();
     } catch (e) {
@@ -162,34 +132,19 @@ export function PostsAdmin() {
 
   return (
     <div className="rounded-2xl border border-zinc-800 bg-ink p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Posts</h1>
-          <p className="mt-1 text-sm text-zinc-400">Editor rich text (Tiptap) + status rascunho/publicado.</p>
-        </div>
-        <button
-          type="button"
-          onClick={startCreate}
-          className="rounded-xl bg-neon-blue px-4 py-2 text-sm font-bold text-ink hover:brightness-110"
-        >
-          Novo
-        </button>
+      <div>
+        <h1 className="text-2xl font-bold text-white">Posts</h1>
+        <p className="mt-1 text-sm text-zinc-400">Editor rich text (Tiptap) + status rascunho/publicado.</p>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar por título ou slug…"
-          className="w-full rounded-xl border border-zinc-700 bg-ink-muted px-4 py-3 text-sm text-white outline-none focus:border-neon-blue sm:max-w-md"
+      <div className="mt-4">
+        <AdminListToolbar
+          query={q}
+          onQueryChange={setQ}
+          queryPlaceholder="Buscar por título ou slug…"
+          onReload={load}
+          onCreate={startCreate}
         />
-        <button
-          type="button"
-          onClick={load}
-          className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-200 hover:bg-zinc-900/40"
-        >
-          Recarregar
-        </button>
       </div>
 
       <div className="mt-5 overflow-x-auto rounded-2xl border border-zinc-800">
@@ -282,7 +237,7 @@ export function PostsAdmin() {
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    if (!editingId) setSlug(slugify(e.target.value));
+                    if (!editingId) setSlug(slugify(e.target.value, { maxLength: 200 }));
                   }}
                   className="mt-1.5 w-full rounded-xl border border-zinc-700 bg-ink px-4 py-3 text-white outline-none focus:border-neon-blue"
                 />
@@ -291,7 +246,7 @@ export function PostsAdmin() {
                 Slug
                 <input
                   value={slug}
-                  onChange={(e) => setSlug(slugify(e.target.value))}
+                  onChange={(e) => setSlug(slugify(e.target.value, { maxLength: 200 }))}
                   className="mt-1.5 w-full rounded-xl border border-zinc-700 bg-ink px-4 py-3 font-mono text-sm text-white outline-none focus:border-neon-blue"
                 />
               </label>

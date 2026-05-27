@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "../styles/page-loader.css";
+
 :root {
   --accent: #00d4ff;
   --accent-dim: #00a8cc;
@@ -50,8 +52,9 @@ body:has(.page-bg) {
   visibility: visible !important;
 }
 
-.site-root:not(.is-booting) #boot-loader {
-  display: none;
+#boot-loader.page-loader--hide {
+  opacity: 0;
+  pointer-events: none;
 }
 
 ::selection {
@@ -59,23 +62,23 @@ body:has(.page-bg) {
   color: #fff;
 }
 
-/* —— Vídeo de fundo (cover = tela cheia, sem bordas) —— */
+/* —— Fundo da home (imagem, cover = tela cheia) —— */
 .video-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  /* Path alinhado a ASSETS.backgrounds.homeWallpaper em src/modules/shared/constants/assets.ts */
   background: var(--bg) url("/wallpaper-cyber-eye.png") center / cover no-repeat;
 }
 
-.video-bg__el {
+.video-bg__image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.9;
 }
 
 .video-bg__shade {
@@ -94,11 +97,8 @@ body:has(.page-bg) {
 
 @media (prefers-reduced-motion: reduce) {
   .video-bg {
-    background: var(--bg) url("/wallpaper-cyber-eye.png") center / cover no-repeat;
-  }
-
-  .video-bg__el {
-    display: none;
+    /* Path alinhado a ASSETS.backgrounds.homeWallpaper em src/modules/shared/constants/assets.ts */
+  background: var(--bg) url("/wallpaper-cyber-eye.png") center / cover no-repeat;
   }
 }
 
@@ -395,8 +395,7 @@ body:has(.page-bg) {
   opacity: 0.9;
 }
 
-.hero__logo-video--loop-fade,
-.video-bg__el--loop-fade {
+.hero__logo-video--loop-fade {
   will-change: opacity;
 }
 
@@ -1790,151 +1789,6 @@ body:has(.page-bg) {
 .wa-float:hover {
   transform: scale(1.06);
   box-shadow: 0 6px 24px rgba(37, 211, 102, 0.45);
-}
-
-/* —— Page loader (tech) —— */
-.page-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: grid;
-  place-items: center;
-  background: var(--bg);
-  transition: opacity 0.28s ease, transform 0.28s ease;
-}
-
-.page-loader--boot {
-  z-index: 9999;
-}
-
-.page-loader::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    900px 600px at 50% 40%,
-    rgba(0, 212, 255, 0.1) 0%,
-    transparent 55%
-  );
-  pointer-events: none;
-}
-
-.page-loader--hide {
-  opacity: 0;
-  transform: translateY(-2px);
-  pointer-events: none;
-}
-
-.page-loader__panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: min(92vw, 440px);
-  border-radius: 16px;
-  border: 1px solid rgba(0, 212, 255, 0.25);
-  background: rgba(6, 10, 22, 0.62);
-  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.55);
-  padding: 1.1rem 1.1rem 1rem;
-}
-
-.page-loader__row {
-  display: flex;
-  align-items: center;
-  gap: 1.1rem;
-  width: 100%;
-}
-
-.page-loader__logo {
-  display: block;
-  width: 168px;
-  height: 168px;
-  flex-shrink: 0;
-  object-fit: contain;
-  filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.45));
-}
-
-.page-loader__title {
-  display: grid;
-  flex: 1;
-  min-width: 0;
-  gap: 0.2rem;
-  text-align: center;
-}
-
-.page-loader__kicker {
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  color: rgba(0, 212, 255, 0.9);
-}
-
-.page-loader__name {
-  font-family: var(--font-display), system-ui, sans-serif;
-  font-size: 1.05rem;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  color: #fff;
-}
-
-.page-loader__bar {
-  width: 100%;
-  margin-top: 0.95rem;
-  height: 10px;
-  border-radius: 999px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 212, 255, 0.25);
-  background: rgba(255, 255, 255, 0.06);
-  position: relative;
-}
-
-.page-loader__bar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(0, 212, 255, 0), rgba(0, 212, 255, 0.95), rgba(0, 212, 255, 0));
-  width: 42%;
-  transform: translateX(-60%);
-  animation: loader-bar 0.95s ease-in-out infinite;
-  filter: drop-shadow(0 0 14px rgba(0, 212, 255, 0.55));
-}
-
-.page-loader__hint {
-  margin: 0.65rem 0 0;
-  font-size: 0.82rem;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-@keyframes loader-scan {
-  0% {
-    transform: rotate(18deg) translateX(-70%);
-    opacity: 0.75;
-  }
-  55% {
-    opacity: 1;
-  }
-  100% {
-    transform: rotate(18deg) translateX(120%);
-    opacity: 0.75;
-  }
-}
-
-@keyframes loader-bar {
-  0% {
-    transform: translateX(-70%);
-  }
-  50% {
-    transform: translateX(120%);
-  }
-  100% {
-    transform: translateX(120%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-loader__bar::before {
-    animation: none;
-  }
 }
 
 /* —— Utilitários —— */
