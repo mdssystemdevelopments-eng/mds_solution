@@ -8,18 +8,14 @@ import { ADMIN_LOGIN_PATH } from "@/lib/admin-routes";
 import { ADMIN_PAGES } from "@/lib/admin-pages";
 
 const NAV = [
-  { href: "/admin", label: "Início" },
   { href: "/admin/conteudo", label: "Editor do site" },
   { href: "/admin/midias", label: "Mídias" },
-  { href: "/admin/posts", label: "Posts" },
-  { href: "/admin/produtos", label: "Produtos" },
-  { href: "/admin/configuracoes", label: "Configurações" },
 ] as const;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isEditor = pathname.startsWith("/admin/conteudo");
+  const isEditor = pathname === "/admin" || pathname.startsWith("/admin/conteudo");
 
   async function logout() {
     const res = await apiFetch("/api/admin/logout", { method: "POST" });
@@ -30,15 +26,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-ink text-zinc-100">
-      <div className={`mx-auto flex gap-0 ${isEditor ? "max-w-[1600px]" : "max-w-7xl gap-6 px-4 py-6"}`}>
-        <aside className="hidden w-56 shrink-0 border-r border-zinc-800 bg-ink-muted/50 p-4 md:block md:min-h-screen">
+      <div className={`mx-auto flex flex-col md:flex-row gap-0 ${isEditor ? "max-w-[1600px]" : "max-w-7xl md:gap-6 px-4 py-6"}`}>
+        <aside className="w-full md:w-56 shrink-0 border-b md:border-b-0 md:border-r border-zinc-800 bg-ink-muted/50 p-4 md:min-h-screen">
           <div className="px-2 py-2">
             <p className="text-xs font-semibold uppercase tracking-widest text-neon-blue">MDS CMS</p>
             <p className="mt-1 text-sm font-bold text-white">Painel</p>
           </div>
-          <nav className="mt-4 space-y-1">
+          <nav className="mt-4 flex gap-2 md:block md:space-y-1">
             {NAV.map((item) => {
-              const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+              const active =
+                item.href === "/admin/conteudo"
+                  ? pathname === "/admin" || pathname.startsWith("/admin/conteudo")
+                  : pathname === item.href || pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
@@ -69,7 +68,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </div>
           )}
           <div className="mt-6 space-y-2 border-t border-zinc-800 pt-4">
-            <Link href="/" target="_blank" className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-900/40">
+            <Link href={process.env.NEXT_PUBLIC_SITE_URL || "https://mdssolution.com.br"} target="_blank" className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-900/40">
               Ver site
             </Link>
             <button type="button" onClick={logout} className="w-full rounded-xl border border-red-500/40 px-3 py-2 text-left text-sm text-red-200 hover:bg-red-950/30">

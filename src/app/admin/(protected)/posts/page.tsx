@@ -1,11 +1,5 @@
-import { PostsAdmin } from "@/components/admin/posts/posts-admin";
-import { SupabaseRequired } from "@/components/admin/supabase-required";
+import { redirect } from "next/navigation";
 
 export default function AdminPostsPage() {
-  return (
-    <SupabaseRequired>
-      <PostsAdmin />
-    </SupabaseRequired>
-  );
+  redirect("/admin/conteudo");
 }
-

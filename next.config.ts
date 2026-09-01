@@ -19,14 +19,12 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  /** Encaminha /api/* para o backend no Render (mesmo domínio no browser = cookies funcionam). */
+  /** Só o formulário de contato pode ir ao Render. Admin/CMS fica no Next. */
   async rewrites() {
     if (!renderApi) return [];
     return [
-      {
-        source: "/api/:path*",
-        destination: `${renderApi}/api/:path*`,
-      },
+      { source: "/api/contact", destination: `${renderApi}/api/contact` },
+      { source: "/api/contact/:path*", destination: `${renderApi}/api/contact/:path*` },
     ];
   },
 };

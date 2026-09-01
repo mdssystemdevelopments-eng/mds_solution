@@ -1,11 +1,5 @@
-import { ProductsAdmin } from "@/components/admin/products/products-admin";
-import { SupabaseRequired } from "@/components/admin/supabase-required";
+import { redirect } from "next/navigation";
 
 export default function AdminProdutosPage() {
-  return (
-    <SupabaseRequired>
-      <ProductsAdmin />
-    </SupabaseRequired>
-  );
+  redirect("/admin/conteudo");
 }
-

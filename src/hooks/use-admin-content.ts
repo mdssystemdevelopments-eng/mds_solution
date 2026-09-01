@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
+import { defaultSiteContent } from "@/lib/default-site-content";
+import { deepMerge } from "@/lib/deep-merge";
 import type { SiteContent } from "@/types/site-content";
 
 export function useAdminContent() {
@@ -15,12 +17,21 @@ export function useAdminContent() {
     setLoading(true);
     try {
       const res = await apiFetch("/api/admin/content");
-      if (!res.ok) throw new Error("Falha ao carregar");
-      const data = (await res.json()) as SiteContent;
-      setContent(data);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(json.error || json.hint || `Falha ao carregar (${res.status})`);
+      }
+      const merged = deepMerge(
+        defaultSiteContent as unknown as Record<string, unknown>,
+        json as Record<string, unknown>,
+      ) as SiteContent;
+      setContent(merged);
       setDirty(false);
-    } catch {
-      toast.error("Não foi possível carregar o conteúdo.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Não foi possível carregar o conteúdo.";
+      toast.error(msg);
+      setContent(defaultSiteContent);
+      setDirty(false);
     } finally {
       setLoading(false);
     }

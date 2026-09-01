@@ -31,7 +31,7 @@ function LoginFields() {
         setError(json.error || "E-mail ou senha incorretos.");
         return;
       }
-      const dest = next.startsWith("/admin") ? next : "/admin";
+      const dest = next.startsWith("/admin") ? next : "/admin/conteudo";
       router.push(dest);
       router.refresh();
     } finally {
@@ -116,8 +116,8 @@ export function LoginCard() {
       </div>
       <LoginForm />
       <p className="login-solution__footer">
-        <Link href="/" className="login-solution__back">
-          ← Voltar ao site
+        <Link href={process.env.NEXT_PUBLIC_SITE_URL || "https://mdssolution.com.br"} className="login-solution__back">
+          Voltar ao site
         </Link>
       </p>
     </div>
