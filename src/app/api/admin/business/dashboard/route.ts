@@ -34,11 +34,24 @@ export async function GET() {
       drafts: projects.filter((item) => item.status === "draft").length,
       private: projects.filter((item) => item.visibility === "private").length,
       companies: companies.length,
+      leads: visits.filter((item) => item.kind === "lead").length,
       views: views.length,
       views7d: views.filter((item) => new Date(item.createdAt).getTime() >= week).length,
       views30d: views.filter((item) => new Date(item.createdAt).getTime() >= month).length,
     },
     top,
+    leads: visits
+      .filter((item) => item.kind === "lead")
+      .slice(0, 6)
+      .map((item) => ({
+        id: item.id,
+        projectId: item.projectId,
+        title: projects.find((p) => p.id === item.projectId)?.title ?? "Projeto",
+        name: item.meta.name || "Sem nome",
+        phone: item.meta.phone || "",
+        message: item.meta.message || "",
+        createdAt: item.createdAt,
+      })),
     recent: projects.slice(0, 8).map((item) => ({
       ...item,
       passwordHash: item.passwordHash ? "set" : "",

@@ -1,3 +1,4 @@
+import { PAGE_CTA } from "@/lib/business/cta";
 import { newBusinessId } from "@/lib/business/helpers";
 import type { BusinessBlock, BlockType } from "@/lib/business/types";
 
@@ -5,38 +6,38 @@ export function createBlock(type: BlockType): BusinessBlock {
   const id = newBusinessId("block");
   const content: Record<string, unknown> = {
     hero: {
-      title: "Titulo da apresentacao",
+      title: "Titulo",
       subtitle: "",
-      text: "Descreva o objetivo desta pagina.",
+      text: "",
       image: "",
       video: "",
-      buttonLabel: "Falar com a MDS",
-      buttonHref: "/contato",
+      buttonLabel: "Quero conversar",
+      buttonHref: PAGE_CTA,
       align: "left",
       height: "md",
       overlay: true,
     },
-    text: { title: "", html: "<p>Escreva o texto aqui.</p>" },
+    text: { title: "", html: "" },
     image: { src: "", alt: "", caption: "", href: "", width: "full" },
     gallery: { layout: "grid", columns: 3, images: [] },
     video: { url: "", title: "", text: "", thumb: "" },
     pdf: { src: "", title: "Documento", label: "Baixar PDF" },
-    cards: { items: [{ title: "Card", text: "Descricao", image: "", href: "" }] },
-    stats: { items: [{ value: "10+", label: "Indicador" }] },
-    testimonials: { items: [{ name: "Cliente", role: "Empresa", text: "Depoimento." }] },
-    timeline: { title: "Cronograma", items: [{ title: "Etapa", text: "Descricao" }] },
-    table: { headers: ["Item", "Detalhe"], rows: [["Exemplo", "Valor"]] },
+    cards: { items: [{ title: "Item", text: "", image: "", href: "" }] },
+    stats: { items: [{ value: "01", label: "Indicador" }] },
+    testimonials: { items: [{ name: "Cliente", role: "", text: "Depoimento." }] },
+    timeline: { title: "Etapas", items: [{ title: "Etapa", text: "" }] },
+    table: { headers: ["Item", "Detalhe"], rows: [["", ""]] },
     pricing: {
-      title: "Planos",
-      plans: [{ name: "Plano", price: "Sob consulta", text: "", items: ["Entrega"], buttonLabel: "Contratar", buttonHref: "/contato" }],
+      title: "Investimento",
+      plans: [{ name: "Escopo", price: "Sob consulta", text: "", items: [], buttonLabel: "Quero conversar", buttonHref: PAGE_CTA }],
     },
-    faq: { items: [{ q: "Pergunta", a: "Resposta" }] },
-    button: { label: "Acao", href: "/contato" },
-    cta: { title: "Vamos conversar?", text: "Fale com a MDS.", buttonLabel: "Contato", buttonHref: "/contato" },
-    contact: { phone: "", whatsapp: "", email: "", address: "", buttonLabel: "WhatsApp", buttonHref: "" },
-    form: { title: "Envie uma mensagem", text: "Retornamos pelo WhatsApp ou e-mail." },
+    faq: { items: [{ q: "Pergunta", a: "" }] },
+    button: { label: "Quero conversar", href: PAGE_CTA },
+    cta: { title: "Quer seguir com este projeto?", text: "Deixe seu contato. A MDS responde por WhatsApp.", buttonLabel: "Quero conversar", buttonHref: PAGE_CTA },
+    contact: { phone: "", whatsapp: "", email: "", address: "", buttonLabel: "Quero conversar", buttonHref: PAGE_CTA },
+    form: { title: "Deixe seu contato", text: "A MDS responde por WhatsApp." },
     divider: { style: "line" },
-    html: { html: "<p>HTML permitido sem scripts.</p>" },
+    html: { html: "" },
   };
   return { id, type, hidden: false, content: (content[type] ?? {}) as Record<string, unknown> };
 }

@@ -7,8 +7,11 @@ import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
 import { AdminPage } from "@/components/admin/admin-page";
 import { BusinessNav } from "@/components/admin/business/business-nav";
+import { BusinessLookPicker } from "@/components/admin/business/business-look-picker";
 import { ImageField } from "@/components/admin/cms/image-field";
 import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
+import { lookTheme, type LookTheme } from "@/lib/business/palettes";
+import { templateDesign } from "@/lib/business/templates";
 import {
   BUSINESS_TEMPLATES,
   BUSINESS_TYPES,
@@ -21,7 +24,7 @@ import {
   type BusinessType,
 } from "@/lib/business/types";
 
-const STEPS = ["Dados", "Tipo", "Modelo"] as const;
+const STEPS = ["Dados", "Tipo", "Modelo", "Aparencia"] as const;
 
 export function BusinessNewProject() {
   const router = useRouter();
@@ -36,6 +39,8 @@ export function BusinessNewProject() {
     cover: "",
     type: "apresentacao-comercial" as BusinessType,
     template: "moderno" as BusinessTemplate,
+    theme: "dark" as LookTheme,
+    palette: "mds",
     password: "",
   });
 
@@ -68,7 +73,7 @@ export function BusinessNewProject() {
   return (
     <AdminPage
       title="Novo projeto"
-      description="Tres etapas. Depois voce edita os blocos no editor."
+      description="Quatro etapas. Depois voce edita os blocos no editor."
       actions={
         <Link href="/admin/business/projetos" className="cms-btn cms-btn--ghost">
           Cancelar
@@ -149,20 +154,46 @@ export function BusinessNewProject() {
                 key={template}
                 type="button"
                 className={`biz-choice${form.template === template ? " is-on" : ""}`}
-                onClick={() => setForm((p) => ({ ...p, template }))}
+                onClick={() => {
+                  const look = templateDesign(template);
+                  setForm((p) => ({
+                    ...p,
+                    template,
+                    theme: lookTheme(look.theme),
+                    palette: look.palette || "mds",
+                  }));
+                }}
               >
                 <strong>{TEMPLATE_LABELS[template]}</strong>
                 <span>{TEMPLATE_HINTS[template]}</span>
               </button>
             ))}
           </div>
+          <div className="biz-actions">
+            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(2)}>
+              Voltar
+            </button>
+            <button type="button" className="cms-btn cms-btn--primary" onClick={() => setStep(4)}>
+              Continuar
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {step === 4 ? (
+        <div>
+          <BusinessLookPicker
+            theme={form.theme}
+            palette={form.palette}
+            onChange={(next) => setForm((p) => ({ ...p, theme: next.theme, palette: next.palette }))}
+          />
           <div className="biz-form biz-form--wide">
             <Field label="Senha (opcional)" hint="Se preencher, o projeto fica privado.">
               <Input type="password" value={form.password} onChange={(v) => setForm((p) => ({ ...p, password: v }))} />
             </Field>
           </div>
           <div className="biz-actions">
-            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(2)}>
+            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(3)}>
               Voltar
             </button>
             <button type="button" className="cms-btn cms-btn--primary" disabled={saving} onClick={() => void create()}>

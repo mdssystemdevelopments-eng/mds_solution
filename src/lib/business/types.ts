@@ -60,13 +60,16 @@ export type BusinessBlock = {
 };
 
 export type BusinessDesign = {
-  theme: "dark" | "light" | "custom";
+  theme: "dark" | "light";
+  palette: string;
   logo: string;
   favicon: string;
   primary: string;
   secondary: string;
   background: string;
   text: string;
+  onPrimary: string;
+  whatsapp: string;
   font: string;
   radius: string;
   buttonStyle: "solid" | "outline";
@@ -123,19 +126,22 @@ export type BusinessProject = {
 export type BusinessVisit = {
   id: string;
   projectId: string;
-  kind: "view" | "click" | "download" | "block";
+  kind: "view" | "click" | "download" | "block" | "lead";
   meta: Record<string, string>;
   createdAt: string;
 };
 
 export const DEFAULT_DESIGN: BusinessDesign = {
   theme: "dark",
+  palette: "mds",
   logo: "",
   favicon: "",
   primary: "#00d4ff",
   secondary: "#00a8cc",
   background: "#030508",
-  text: "#ffffff",
+  text: "#f4f7fa",
+  onPrimary: "#031018",
+  whatsapp: "",
   font: "system-ui",
   radius: "12px",
   buttonStyle: "solid",

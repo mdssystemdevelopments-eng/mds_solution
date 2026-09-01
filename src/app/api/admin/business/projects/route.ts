@@ -4,6 +4,7 @@ import { slugify } from "@/modules/shared/utils/slugify";
 import { mediaSrc, newBusinessId, sanitizePlain } from "@/lib/business/helpers";
 import { hashBusinessPassword } from "@/lib/business/password";
 import { listCompanies, listProjects, listVisits, saveProject, slugTaken } from "@/lib/business/store";
+import { applyLook } from "@/lib/business/palettes";
 import { templateBlocks, templateDesign } from "@/lib/business/templates";
 import {
   BUSINESS_TEMPLATES,
@@ -69,7 +70,10 @@ export async function POST(req: Request) {
     createdAt: now,
     updatedAt: now,
     publishedAt: null,
-    design: templateDesign(template),
+    design: applyLook(templateDesign(template), {
+      theme: typeof body.theme === "string" ? body.theme : undefined,
+      palette: typeof body.palette === "string" ? body.palette : undefined,
+    }),
     seo: {
       title,
       description: sanitizePlain(body.description, 180),

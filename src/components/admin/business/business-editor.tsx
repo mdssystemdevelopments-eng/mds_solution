@@ -8,7 +8,9 @@ import { apiFetch } from "@/lib/api-fetch";
 import { FileField, GalleryField, ImageField } from "@/components/admin/cms/image-field";
 import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
 import { BusinessPublicView } from "@/components/business/business-public-view";
+import { BusinessLookPicker } from "@/components/admin/business/business-look-picker";
 import { createBlock } from "@/lib/business/blocks";
+import { applyLook, lookTheme } from "@/lib/business/palettes";
 import {
   BLOCK_GROUPS,
   BLOCK_LABELS,
@@ -20,7 +22,7 @@ import {
   type BusinessProject,
 } from "@/lib/business/types";
 
-type InspectorTab = "bloco" | "projeto" | "design" | "seo";
+type InspectorTab = "bloco" | "projeto" | "design" | "seo" | "pedidos";
 
 const KEY_LABELS: Record<string, string> = {
   title: "Titulo",
@@ -178,6 +180,22 @@ export function BusinessEditor({ id }: { id: string }) {
             </button>
           ))}
         </div>
+        <div className="biz-viewports">
+          <button
+            type="button"
+            className={lookTheme(project.design.theme) === "light" ? "is-on" : ""}
+            onClick={() => patch((p) => ({ ...p, design: applyLook(p.design, { theme: "light" }) }))}
+          >
+            Claro
+          </button>
+          <button
+            type="button"
+            className={lookTheme(project.design.theme) === "dark" ? "is-on" : ""}
+            onClick={() => patch((p) => ({ ...p, design: applyLook(p.design, { theme: "dark" }) }))}
+          >
+            Escuro
+          </button>
+        </div>
         <a className="cms-btn cms-btn--ghost" href={`/business/${project.slug}`} target="_blank" rel="noreferrer">
           Visualizar
         </a>
@@ -258,6 +276,7 @@ export function BusinessEditor({ id }: { id: string }) {
               ["projeto", "Projeto"],
               ["design", "Design"],
               ["seo", "SEO"],
+              ["pedidos", "Pedidos"],
             ] as const).map(([key, label]) => (
               <button key={key} type="button" className={tab === key ? "is-on" : ""} onClick={() => setTab(key)}>
                 {label}
@@ -306,6 +325,7 @@ export function BusinessEditor({ id }: { id: string }) {
 
           {tab === "design" ? <DesignForm project={project} patch={patch} /> : null}
           {tab === "seo" ? <SeoForm project={project} patch={patch} /> : null}
+          {tab === "pedidos" ? <LeadsPanel id={id} /> : null}
         </aside>
       </div>
     </div>
@@ -423,18 +443,15 @@ function DesignForm({
   const d = project.design;
   return (
     <div className="biz-form">
-      <Field label="Tema">
-        <select
-          className="cms-input"
-          value={d.theme}
-          onChange={(e) => patch((p) => ({ ...p, design: { ...p.design, theme: e.target.value as BusinessProject["design"]["theme"] } }))}
-        >
-          <option value="dark">Escuro</option>
-          <option value="light">Claro</option>
-          <option value="custom">Personalizado</option>
-        </select>
-      </Field>
+      <BusinessLookPicker
+        theme={d.theme}
+        palette={d.palette}
+        onChange={(next) => patch((p) => ({ ...p, design: applyLook(p.design, next) }))}
+      />
       <ImageField label="Logo" value={d.logo} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, logo: v } }))} />
+      <Field label="WhatsApp deste projeto" hint="Se vazio, usa o da empresa ou o da MDS. So numeros.">
+        <Input value={d.whatsapp || ""} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, whatsapp: v } }))} />
+      </Field>
       <Field label="Cor primaria">
         <Input value={d.primary} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, primary: v } }))} />
       </Field>
@@ -488,6 +505,40 @@ function SeoForm({ project, patch }: { project: BusinessProject; patch: (fn: (p:
   );
 }
 
+function LeadsPanel({ id }: { id: string }) {
+  const [items, setItems] = useState<{ createdAt: string; meta: Record<string, string> }[]>([]);
+
+  useEffect(() => {
+    apiFetch(`/api/admin/business/projects/${id}/analytics`)
+      .then((r) => r.json())
+      .then((json) => {
+        const recent = Array.isArray(json.recent) ? json.recent : [];
+        setItems(recent.filter((item: { kind?: string }) => item.kind === "lead"));
+      })
+      .catch(() => setItems([]));
+  }, [id]);
+
+  if (!items.length) {
+    return <p className="biz-muted">Nenhum pedido neste projeto ainda. Quando o cliente clicar em Quero conversar, o recado aparece aqui.</p>;
+  }
+
+  return (
+    <ul className="biz-list">
+      {items.map((item, i) => (
+        <li key={`${item.createdAt}-${i}`} className="biz-row">
+          <div className="biz-row__body">
+            <strong>{item.meta.name || "Sem nome"}</strong>
+            <p>
+              {item.meta.phone || ""} · {new Date(item.createdAt).toLocaleString("pt-BR")}
+            </p>
+            {item.meta.message ? <p>{item.meta.message}</p> : null}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function BlockFields({
   block,
   onChange,
@@ -533,7 +584,7 @@ function BlockFields({
           <Field label="Botao">
             <Input value={String(c.buttonLabel ?? "")} onChange={(v) => set("buttonLabel", v)} />
           </Field>
-          <Field label="Link do botao">
+          <Field label="Link do botao" hint="Vazio abre o pedido nesta pagina. Nao use /contato.">
             <Input value={String(c.buttonHref ?? "")} onChange={(v) => set("buttonHref", v)} />
           </Field>
           <Field label="Altura">
@@ -608,7 +659,7 @@ function BlockFields({
               onChange={(v) => set(block.type === "button" ? "label" : "buttonLabel", v)}
             />
           </Field>
-          <Field label="Link">
+          <Field label="Link" hint="Vazio abre o pedido nesta pagina. Nao use /contato.">
             <Input
               value={String(c.buttonHref ?? c.href ?? "")}
               onChange={(v) => set(block.type === "button" ? "href" : "buttonHref", v)}

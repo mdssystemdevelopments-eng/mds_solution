@@ -1,3 +1,5 @@
+import { applyLook } from "./palettes";
+import { PAGE_CTA } from "./cta";
 import type { BusinessBlock, BusinessDesign, BusinessTemplate } from "./types";
 import { DEFAULT_DESIGN } from "./types";
 
@@ -15,8 +17,8 @@ function hero(title: string, text: string): BusinessBlock {
       text,
       image: "",
       video: "",
-      buttonLabel: "Falar com a MDS",
-      buttonHref: "/contato",
+      buttonLabel: "Quero conversar",
+      buttonHref: PAGE_CTA,
       align: "left",
       height: "md",
       overlay: true,
@@ -25,7 +27,7 @@ function hero(title: string, text: string): BusinessBlock {
 }
 
 export function templateBlocks(template: BusinessTemplate, title: string): BusinessBlock[] {
-  const intro = hero(title, "Apresentacao preparada pela MDS Solucoes em Tecnologia.");
+  const intro = hero(title, "Pagina exclusiva deste projeto.");
   const stats: BusinessBlock = {
     id: id("block"),
     type: "stats",
@@ -54,9 +56,9 @@ export function templateBlocks(template: BusinessTemplate, title: string): Busin
     type: "cta",
     content: {
       title: "Quer seguir com este projeto?",
-      text: "Fale com a MDS para ajustar escopo, prazo e investimento.",
-      buttonLabel: "Entrar em contato",
-      buttonHref: "/contato",
+      text: "Deixe seu contato. A MDS responde por WhatsApp.",
+      buttonLabel: "Quero conversar",
+      buttonHref: PAGE_CTA,
     },
   };
 
@@ -76,8 +78,8 @@ export function templateBlocks(template: BusinessTemplate, title: string): Busin
               price: "Sob consulta",
               text: "Diagnostico e proposta fechada antes de qualquer cobranca.",
               items: ["Briefing", "Prototipo", "Entrega acompanhada"],
-              buttonLabel: "Solicitar proposta",
-              buttonHref: "/contato",
+              buttonLabel: "Quero conversar",
+              buttonHref: PAGE_CTA,
             },
           ],
         },
@@ -116,17 +118,10 @@ export function templateBlocks(template: BusinessTemplate, title: string): Busin
 }
 
 export function templateDesign(template: BusinessTemplate): BusinessDesign {
-  if (template === "minimalista") {
-    return { ...DEFAULT_DESIGN, theme: "light", background: "#f4f6f8", text: "#121418", primary: "#0b6b8a" };
-  }
-  if (template === "corporativo") {
-    return { ...DEFAULT_DESIGN, primary: "#3dd6ff", background: "#071018" };
-  }
-  if (template === "premium") {
-    return { ...DEFAULT_DESIGN, primary: "#d4b36a", secondary: "#a4843f" };
-  }
-  if (template === "imobiliario") {
-    return { ...DEFAULT_DESIGN, primary: "#7dd3c7", background: "#08110f" };
-  }
-  return { ...DEFAULT_DESIGN };
+  if (template === "minimalista") return applyLook(DEFAULT_DESIGN, { theme: "light", palette: "grafite" });
+  if (template === "corporativo") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "oceano" });
+  if (template === "premium") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "ouro" });
+  if (template === "imobiliario") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "floresta" });
+  if (template === "portfolio") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "noite" });
+  return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "mds" });
 }

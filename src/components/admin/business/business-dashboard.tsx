@@ -19,8 +19,10 @@ type Dash = {
     views: number;
     views7d: number;
     views30d: number;
+    leads: number;
   };
   top: { id: string; title: string; views: number }[];
+  leads: { id: string; projectId: string; title: string; name: string; phone: string; message: string; createdAt: string }[];
   recent: {
     id: string;
     title: string;
@@ -64,6 +66,7 @@ export function BusinessDashboard() {
     ["Publicados", data.totals.published],
     ["Rascunhos", data.totals.drafts],
     ["Empresas", data.totals.companies],
+    ["Pedidos", data.totals.leads],
     ["Views", data.totals.views],
     ["7 dias", data.totals.views7d],
   ] as const;
@@ -123,21 +126,27 @@ export function BusinessDashboard() {
           )}
         </section>
         <section>
-          <h2 className="biz-h2">Mais acessados</h2>
-          {data.top.length === 0 ? (
-            <p className="biz-muted">Ainda nao ha visualizacoes.</p>
+          <h2 className="biz-h2">Pedidos</h2>
+          {data.leads.length === 0 ? (
+            <p className="biz-muted">Quando o cliente pedir contato, o recado aparece aqui.</p>
           ) : (
-            <ul className="biz-bars">
-              {data.top.map((item) => (
-                <li key={item.id}>
-                  <span>{item.title}</span>
-                  <b>{item.views}</b>
-                  <i style={{ width: `${Math.min(100, item.views * 8)}%` }} />
+            <ul className="biz-list">
+              {data.leads.map((item) => (
+                <li key={item.id} className="biz-row">
+                  <div className="biz-row__body">
+                    <strong>{item.name}</strong>
+                    <p>
+                      {item.title} · {item.phone} · {new Date(item.createdAt).toLocaleString("pt-BR")}
+                    </p>
+                    {item.message ? <p>{item.message}</p> : null}
+                  </div>
+                  <Link href={`/admin/business/projetos/${item.projectId}`} className="cms-btn cms-btn--ghost">
+                    Ver
+                  </Link>
                 </li>
               ))}
             </ul>
           )}
-          <p className="biz-muted">30 dias: {data.totals.views30d} visualizacoes</p>
         </section>
       </div>
     </AdminPage>

@@ -4,6 +4,7 @@ import { slugify } from "@/modules/shared/utils/slugify";
 import { deleteProject, getProject, saveProject, slugTaken } from "@/lib/business/store";
 import { hashBusinessPassword } from "@/lib/business/password";
 import { mediaSrc, sanitizeHtml, sanitizePlain } from "@/lib/business/helpers";
+import { lookTheme } from "@/lib/business/palettes";
 import {
   BLOCK_TYPES,
   BUSINESS_STATUSES,
@@ -96,6 +97,17 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     design: {
       ...DEFAULT_DESIGN,
       ...(typeof body.design === "object" && body.design ? body.design : current.design),
+      theme: lookTheme(
+        typeof body.design === "object" && body.design
+          ? (body.design as { theme?: string }).theme
+          : current.design.theme,
+      ),
+      palette: sanitizePlain(
+        typeof body.design === "object" && body.design
+          ? (body.design as { palette?: string }).palette
+          : current.design.palette,
+        40,
+      ) || current.design.palette || "mds",
       logo: mediaSrc(
         (typeof body.design === "object" && body.design
           ? (body.design as { logo?: string }).logo
