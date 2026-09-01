@@ -6,6 +6,7 @@ import { arr, str } from "@/lib/business/blocks";
 import { mediaSrc, sanitizeHtml } from "@/lib/business/helpers";
 import { lookTheme } from "@/lib/business/palettes";
 import { PAGE_CTA } from "@/lib/business/cta";
+import { TYPE_LABELS } from "@/lib/business/types";
 import { LeadAction, LeadProvider } from "@/components/business/business-lead";
 
 function rewriteMedia(html: string): string {
@@ -23,12 +24,23 @@ function SiteFrame({ html }: { html: string }) {
   return (
     <div className="bp-siteframe">
       <div className="bp-siteframe__bar" aria-hidden="true">
-        <span />
-        <span />
-        <span />
+        <i />
+        <i />
+        <i />
+        <em>preview do site</em>
       </div>
       <iframe className="bp-siteframe__view" srcDoc={srcDoc} title="Site" sandbox="allow-popups allow-forms" />
     </div>
+  );
+}
+
+function SectionHead({ kicker, title }: { kicker?: string; title?: string }) {
+  if (!kicker && !title) return null;
+  return (
+    <header className="bp-head">
+      {kicker ? <p className="bp-kicker">{kicker}</p> : null}
+      {title ? <h2>{title}</h2> : null}
+    </header>
   );
 }
 
@@ -74,9 +86,11 @@ function BlockView({
           {str(c, "title") ? <h1>{str(c, "title")}</h1> : null}
           {str(c, "text") ? <p>{str(c, "text")}</p> : null}
           {str(c, "buttonLabel") ? (
-            <LeadAction className="bp-btn" href={str(c, "buttonHref") || PAGE_CTA} label={str(c, "buttonLabel")}>
-              {str(c, "buttonLabel")}
-            </LeadAction>
+            <div className="bp-hero__actions">
+              <LeadAction className="bp-btn" href={str(c, "buttonHref") || PAGE_CTA} label={str(c, "buttonLabel")}>
+                {str(c, "buttonLabel")}
+              </LeadAction>
+            </div>
           ) : null}
         </div>
       </section>
@@ -89,7 +103,7 @@ function BlockView({
     if (!plain && !str(c, "title")) return <EmptyNote preview={preview} text="Bloco de texto vazio." />;
     return (
       <section className="bp-wrap bp-section">
-        {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
+        <SectionHead title={str(c, "title") || undefined} />
         {plain ? <IsolatedHtml html={html} /> : null}
       </section>
     );
@@ -159,6 +173,7 @@ function BlockView({
     if (!items.length) return <EmptyNote preview={preview} text="Adicione itens neste bloco de cards." />;
     return (
       <section className="bp-wrap bp-section">
+        <SectionHead kicker="Entrega" />
         <div className="bp-cards">
           {items.map((item, i) => (
             <article key={i} className="bp-card">
@@ -181,14 +196,17 @@ function BlockView({
     const items = arr(c, "items").filter((item) => str(item, "value") || str(item, "label"));
     if (!items.length) return <EmptyNote preview={preview} text="Adicione indicadores neste bloco." />;
     return (
-      <section className="bp-wrap bp-section">
-        <div className="bp-stats">
-          {items.map((item, i) => (
-            <div key={i} className="bp-stat">
-              <strong>{str(item, "value")}</strong>
-              <span>{str(item, "label")}</span>
-            </div>
-          ))}
+      <section className="bp-band">
+        <div className="bp-wrap bp-section bp-section--stats">
+          <SectionHead kicker="Principios" />
+          <div className="bp-stats">
+            {items.map((item, i) => (
+              <div key={i} className="bp-stat">
+                <strong>{str(item, "value")}</strong>
+                <span>{str(item, "label")}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -205,7 +223,7 @@ function BlockView({
               {str(item, "text") ? <p>{str(item, "text")}</p> : null}
               <footer>
                 {str(item, "name")}
-                {str(item, "role") ? ` · ${str(item, "role")}` : ""}
+                {str(item, "role") ? `, ${str(item, "role")}` : ""}
               </footer>
             </blockquote>
           ))}
@@ -219,7 +237,7 @@ function BlockView({
     if (!items.length) return <EmptyNote preview={preview} text="Adicione etapas neste bloco." />;
     return (
       <section className="bp-wrap bp-section">
-        {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
+        <SectionHead kicker="Metodo" title={str(c, "title") || undefined} />
         <ol className="bp-time">
           {items.map((item, i) => (
             <li key={i}>
@@ -328,6 +346,7 @@ function BlockView({
     return (
       <section className="bp-cta">
         <div className="bp-wrap">
+          <p className="bp-kicker">Proximo passo</p>
           {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
           {str(c, "text") ? <p>{str(c, "text")}</p> : null}
           <LeadAction className="bp-btn" href={str(c, "buttonHref") || PAGE_CTA} label={str(c, "buttonLabel") || "Quero conversar"}>
@@ -378,6 +397,7 @@ function BlockView({
     if (!plain) return <EmptyNote preview={preview} text="Cole o HTML neste bloco." />;
     return (
       <section className="bp-siteframe-wrap">
+        <SectionHead kicker="Site" title="Preview do que sera entregue" />
         <SiteFrame html={html} />
       </section>
     );
@@ -453,14 +473,26 @@ export function BusinessPublicView({
           ["--bp-on-primary" as string]: d.onPrimary || (theme === "light" ? "#ffffff" : "#031018"),
           ["--bp-cover" as string]: d.coverColor || d.background,
           ["--bp-radius" as string]: d.radius,
-          fontFamily: d.font || "system-ui, sans-serif",
+          fontFamily:
+            !d.font || d.font === "system-ui"
+              ? "var(--font-sans), Inter, ui-sans-serif, system-ui, sans-serif"
+              : d.font,
         }}
       >
         {d.showHeader ? (
           <header className="bp-top">
             <div className="bp-wrap bp-top__in">
-              {mediaSrc(d.logo) ? <img src={mediaSrc(d.logo)} alt="" className="bp-logo" /> : <strong>{company?.name || project.title}</strong>}
-              {company?.tradeName || company?.name ? <span>{company.tradeName || company.name}</span> : null}
+              <div className="bp-top__brand">
+                {mediaSrc(d.logo) ? <img src={mediaSrc(d.logo)} alt="" className="bp-logo" /> : <span className="bp-top__mark">MDS</span>}
+                <strong>{project.title}</strong>
+              </div>
+              <p className="bp-top__meta">
+                {company?.tradeName || company?.name || "MDS Solucoes em Tecnologia"}
+                <span>{TYPE_LABELS[project.type] || project.type}</span>
+              </p>
+              <LeadAction className="bp-top__cta" href={PAGE_CTA} label="topo">
+                Falar no WhatsApp
+              </LeadAction>
             </div>
           </header>
         ) : null}
@@ -477,7 +509,7 @@ export function BusinessPublicView({
             <div className="bp-wrap bp-foot__in">
               <span>{company?.name || project.title}</span>
               <LeadAction className="bp-foot__cta" href={PAGE_CTA} label="rodape">
-                Quero conversar
+                Falar no WhatsApp
               </LeadAction>
             </div>
           </footer>

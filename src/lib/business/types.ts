@@ -183,8 +183,8 @@ export const TEMPLATE_LABELS: Record<BusinessTemplate, string> = {
 };
 
 export const TEMPLATE_HINTS: Record<BusinessTemplate, string> = {
-  moderno: "Escuro, direto, com numeros e chamada.",
-  corporativo: "Mais formal, com etapas do trabalho.",
+  moderno: "Dossie claro, capa forte, metodo e chamada.",
+  corporativo: "Leitura do projeto, etapas e entrega.",
   minimalista: "Claro, curto, so o essencial.",
   premium: "Foco em investimento e proposta.",
   imobiliario: "Espaco para galeria de fotos.",

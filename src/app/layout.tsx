@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Instrument_Serif, Inter, JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AppToaster } from "@/components/toaster";
 import { BrowserTitleMarquee } from "@/components/browser-title-marquee";
@@ -21,6 +21,13 @@ const jetbrains = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
+});
+
+const serif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-bp-serif",
 });
 
 export const metadata: Metadata = {
@@ -62,7 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="preload" href={ASSETS.logos.animWebm} as="video" type="video/webm" />
         <link rel="preload" href={ASSETS.logos.animMp4} as="video" type="video/mp4" />
       </head>
-      <body className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} min-h-screen font-sans notranslate`} translate="no">
+      <body className={`${inter.variable} ${jakarta.variable} ${jetbrains.variable} ${serif.variable} min-h-screen font-sans notranslate`} translate="no">
         <BrowserTitleMarquee text="MDS Soluções em Tecnologia" />
         {children}
         <AppToaster />

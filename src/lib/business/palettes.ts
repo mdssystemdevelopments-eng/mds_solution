@@ -25,7 +25,7 @@ export const BUSINESS_PALETTES: BusinessPalette[] = [
     label: "MDS",
     hint: "Ciano da marca.",
     dark: { primary: "#00d4ff", secondary: "#00a8cc", background: "#030508", text: "#f4f7fa", onPrimary: "#031018" },
-    light: { primary: "#0b7a96", secondary: "#0a5f75", background: "#f3f6f8", text: "#121418", onPrimary: "#ffffff" },
+    light: { primary: "#0b6b82", secondary: "#0a5366", background: "#F6F4EF", text: "#101010", onPrimary: "#ffffff" },
   },
   {
     id: "grafite",
