@@ -173,7 +173,6 @@ function BlockView({
     if (!items.length) return <EmptyNote preview={preview} text="Adicione itens neste bloco de cards." />;
     return (
       <section className="bp-wrap bp-section">
-        <SectionHead kicker="Entrega" />
         <div className="bp-cards">
           {items.map((item, i) => (
             <article key={i} className="bp-card">
@@ -198,7 +197,7 @@ function BlockView({
     return (
       <section className="bp-band">
         <div className="bp-wrap bp-section bp-section--stats">
-          <SectionHead kicker="Principios" />
+          <SectionHead title={str(c, "title") || undefined} />
           <div className="bp-stats">
             {items.map((item, i) => (
               <div key={i} className="bp-stat">
@@ -237,7 +236,7 @@ function BlockView({
     if (!items.length) return <EmptyNote preview={preview} text="Adicione etapas neste bloco." />;
     return (
       <section className="bp-wrap bp-section">
-        <SectionHead kicker="Metodo" title={str(c, "title") || undefined} />
+        <SectionHead title={str(c, "title") || undefined} />
         <ol className="bp-time">
           {items.map((item, i) => (
             <li key={i}>
@@ -346,7 +345,6 @@ function BlockView({
     return (
       <section className="bp-cta">
         <div className="bp-wrap">
-          <p className="bp-kicker">Proximo passo</p>
           {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
           {str(c, "text") ? <p>{str(c, "text")}</p> : null}
           <LeadAction className="bp-btn" href={str(c, "buttonHref") || PAGE_CTA} label={str(c, "buttonLabel") || "Quero conversar"}>
@@ -396,8 +394,7 @@ function BlockView({
     const plain = html.replace(/<[^>]+>/g, "").trim();
     if (!plain) return <EmptyNote preview={preview} text="Cole o HTML neste bloco." />;
     return (
-      <section className="bp-siteframe-wrap">
-        <SectionHead kicker="Site" title="Preview do que sera entregue" />
+      <section className="bp-wrap bp-section">
         <SiteFrame html={html} />
       </section>
     );
@@ -487,7 +484,7 @@ export function BusinessPublicView({
                 <strong>{project.title}</strong>
               </div>
               <p className="bp-top__meta">
-                {company?.tradeName || company?.name || "MDS Solucoes em Tecnologia"}
+                <span>{company?.tradeName || company?.name || "MDS Solucoes em Tecnologia"}</span>
                 <span>{TYPE_LABELS[project.type] || project.type}</span>
               </p>
               <LeadAction className="bp-top__cta" href={PAGE_CTA} label="topo">
