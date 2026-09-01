@@ -10,6 +10,7 @@ export type PortfolioItem = {
   category: "site" | "erp" | "sistema" | "app";
   description: string;
   image: string;
+  images?: string[];
   stack: string[];
   year: string;
   stats: { users: string; modules: string };

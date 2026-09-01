@@ -11,7 +11,7 @@ import {
   SectionBlock,
   Textarea,
 } from "@/components/admin/cms/form-fields";
-import { ImageField } from "@/components/admin/cms/image-field";
+import { ImageField, GalleryField } from "@/components/admin/cms/image-field";
 
 type PatchFn = (updater: (prev: SiteContent) => SiteContent) => void;
 
@@ -476,7 +476,17 @@ function PortfolioEditor({ content, patch }: { content: SiteContent; patch: Patc
             <Field label="Nome"><Input value={item.name} onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], name: v }; return { ...c, portfolio: { ...c.portfolio, items } }; })} /></Field>
             <Field label="Cliente"><Input value={item.client} onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], client: v }; return { ...c, portfolio: { ...c.portfolio, items } }; })} /></Field>
             <Field label="Descrição"><Textarea value={item.description} onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], description: v }; return { ...c, portfolio: { ...c.portfolio, items } }; })} rows={2} /></Field>
-            <ImageField label="Imagem do projeto" value={item.image} onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], image: v }; return { ...c, portfolio: { ...c.portfolio, items } }; })} />
+            <ImageField
+              label="Capa do projeto"
+              hint="Foto principal do card. Mesmo recorte 16:10 no site."
+              value={item.image}
+              onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], image: v }; return { ...c, portfolio: { ...c.portfolio, items } }; })}
+            />
+            <GalleryField
+              label="Galeria do projeto"
+              values={item.images ?? []}
+              onChange={(urls) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], images: urls }; return { ...c, portfolio: { ...c.portfolio, items } }; })}
+            />
             <Field label="Categoria">
               <select value={item.category} onChange={(e) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], category: e.target.value as typeof item.category }; return { ...c, portfolio: { ...c.portfolio, items } }; })} className="cms-input">
                 <option value="site">Site</option>
@@ -492,7 +502,7 @@ function PortfolioEditor({ content, patch }: { content: SiteContent; patch: Patc
             <Field label="Recursos" hint="Um por linha"><Textarea value={item.features.join("\n")} onChange={(v) => patch((c) => { const items = [...c.portfolio.items]; items[i] = { ...items[i], features: v.split("\n").map((x) => x.trim()).filter(Boolean) }; return { ...c, portfolio: { ...c.portfolio, items } }; })} rows={3} /></Field>
           </CardBox>
         ))}
-        <AddButton label="Adicionar projeto" onClick={() => patch((c) => ({ ...c, portfolio: { ...c.portfolio, items: [...c.portfolio.items, { name: "Novo projeto", client: "", category: "site", description: "", image: "", stack: [], year: "2026", stats: { users: "", modules: "" }, features: [] }] } }))} />
+        <AddButton label="Adicionar projeto" onClick={() => patch((c) => ({ ...c, portfolio: { ...c.portfolio, items: [...c.portfolio.items, { name: "Novo projeto", client: "", category: "site", description: "", image: "", images: [], stack: [], year: "2026", stats: { users: "", modules: "" }, features: [] }] } }))} />
       </div>
     </div>
   );

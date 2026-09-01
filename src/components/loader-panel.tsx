@@ -1,20 +1,25 @@
-import { ASSETS } from "@/modules/shared/constants/assets";
-
-const LOGO_SRC = ASSETS.logos.main;
-
 export function LoaderPanel() {
   return (
-    <div className="page-loader__panel">
-      <div className="page-loader__row">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={LOGO_SRC} alt="" className="page-loader__logo" width={168} height={168} />
-        <div className="page-loader__title">
-          <span className="page-loader__kicker">INICIALIZANDO</span>
-          <span className="page-loader__name">MDS SOLUÇÕES</span>
-        </div>
+    <div className="mds-loader" role="status" aria-live="polite" aria-label="Carregando">
+      <div className="mds-loader__bars" aria-hidden>
+        <span className="mds-loader__bar" style={{ height: 14, animationDelay: "0s" }} />
+        <span className="mds-loader__bar" style={{ height: 34, animationDelay: "0.1s" }} />
+        <span className="mds-loader__bar" style={{ height: 54, animationDelay: "0.2s" }} />
+        <span className="mds-loader__bar" style={{ height: 34, animationDelay: "0.3s" }} />
+        <span className="mds-loader__bar" style={{ height: 14, animationDelay: "0.4s" }} />
       </div>
-      <div className="page-loader__bar" role="progressbar" aria-label="Carregando" />
-      <p className="page-loader__hint">Carregando interface…</p>
+      <p className="mds-loader__text">
+        CARREGANDO
+        <span className="mds-loader__dot" style={{ animationDelay: "0s" }}>
+          .
+        </span>
+        <span className="mds-loader__dot" style={{ animationDelay: "0.2s" }}>
+          .
+        </span>
+        <span className="mds-loader__dot" style={{ animationDelay: "0.4s" }}>
+          .
+        </span>
+      </p>
     </div>
   );
 }
