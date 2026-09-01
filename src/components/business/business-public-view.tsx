@@ -1,8 +1,23 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { BusinessBlock, BusinessCompany, BusinessDesign, BusinessProject } from "@/lib/business/types";
 import { arr, str } from "@/lib/business/blocks";
-import { useState } from "react";
+import { mediaSrc, sanitizeHtml } from "@/lib/business/helpers";
+
+function IsolatedHtml({ html, preview }: { html: string; preview?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const host = ref.current;
+    if (!host) return;
+    const root = host.shadowRoot ?? host.attachShadow({ mode: "open" });
+    root.innerHTML = [
+      "<style>img,video,iframe{max-width:100%;height:auto;}*{box-sizing:border-box;max-width:100%;}</style>",
+      sanitizeHtml(html, 20000, preview),
+    ].join("");
+  }, [html, preview]);
+  return <div ref={ref} className="bp-html" />;
+}
 
 function track(projectId: string, kind: "click" | "download", label: string, preview?: boolean) {
   if (preview) return;
@@ -13,14 +28,25 @@ function track(projectId: string, kind: "click" | "download", label: string, pre
   });
 }
 
-function BlockView({ block, projectId, preview }: { block: BusinessBlock; projectId: string; preview?: boolean }) {
+function BlockView({
+  block,
+  projectId,
+  preview,
+  cover,
+}: {
+  block: BusinessBlock;
+  projectId: string;
+  preview?: boolean;
+  cover?: string;
+}) {
   const c = block.content;
   if (block.hidden) return null;
 
   if (block.type === "hero") {
+    const image = mediaSrc(str(c, "image") || cover || "");
     return (
       <section className={`bp-hero bp-hero--${str(c, "height", "md")} bp-hero--${str(c, "align", "left")}`}>
-        {str(c, "image") ? <img src={str(c, "image")} alt="" className="bp-hero__bg" /> : null}
+        {image ? <img src={image} alt="" className="bp-hero__bg" /> : null}
         {c.overlay ? <div className="bp-hero__overlay" /> : null}
         <div className="bp-wrap bp-hero__copy">
           {str(c, "subtitle") ? <p className="bp-kicker">{str(c, "subtitle")}</p> : null}
@@ -40,7 +66,7 @@ function BlockView({ block, projectId, preview }: { block: BusinessBlock; projec
     return (
       <section className="bp-wrap bp-section">
         {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
-        <div className="bp-rich" dangerouslySetInnerHTML={{ __html: str(c, "html") }} />
+        <IsolatedHtml html={str(c, "html")} preview={preview} />
       </section>
     );
   }
@@ -48,7 +74,7 @@ function BlockView({ block, projectId, preview }: { block: BusinessBlock; projec
   if (block.type === "image") {
     const img = (
       <figure className={`bp-figure bp-figure--${str(c, "width", "full")}`}>
-        {str(c, "src") ? <img src={str(c, "src")} alt={str(c, "alt")} /> : null}
+        {mediaSrc(str(c, "src")) ? <img src={mediaSrc(str(c, "src"))} alt={str(c, "alt")} /> : null}
         {str(c, "caption") ? <figcaption>{str(c, "caption")}</figcaption> : null}
       </figure>
     );
@@ -72,8 +98,8 @@ function BlockView({ block, projectId, preview }: { block: BusinessBlock; projec
         {str(c, "text") ? <p>{str(c, "text")}</p> : null}
         {embed ? (
           <div className="bp-video"><iframe src={embed} title={str(c, "title") || "Video"} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>
-        ) : str(c, "thumb") ? (
-          <img src={str(c, "thumb")} alt="" />
+        ) : mediaSrc(str(c, "thumb")) ? (
+          <img src={mediaSrc(str(c, "thumb"))} alt="" />
         ) : null}
       </section>
     );
@@ -99,7 +125,7 @@ function BlockView({ block, projectId, preview }: { block: BusinessBlock; projec
         <div className="bp-cards">
           {arr(c, "items").map((item, i) => (
             <article key={i} className="bp-card">
-              {str(item, "image") ? <img src={str(item, "image")} alt="" /> : null}
+              {mediaSrc(str(item, "image")) ? <img src={mediaSrc(str(item, "image"))} alt="" /> : null}
               <h3>{str(item, "title")}</h3>
               <p>{str(item, "text")}</p>
               {str(item, "href") ? <a href={str(item, "href")}>Ver</a> : null}
@@ -240,14 +266,18 @@ function BlockView({ block, projectId, preview }: { block: BusinessBlock; projec
   if (block.type === "divider") return <hr className="bp-hr" />;
 
   if (block.type === "html") {
-    return <section className="bp-wrap bp-section" dangerouslySetInnerHTML={{ __html: str(c, "html") }} />;
+    return (
+      <section className="bp-wrap bp-section">
+        <IsolatedHtml html={str(c, "html")} preview={preview} />
+      </section>
+    );
   }
 
   return null;
 }
 
 function GalleryBlock({ content }: { content: Record<string, unknown> }) {
-  const images = Array.isArray(content.images) ? content.images.map(String).filter(Boolean) : [];
+  const images = Array.isArray(content.images) ? content.images.map(mediaSrc).filter(Boolean) : [];
   const [open, setOpen] = useState<number | null>(null);
   const cols = numSafe(content.columns, 3);
   return (
@@ -314,13 +344,18 @@ export function BusinessPublicView({
       {d.showHeader ? (
         <header className="bp-top">
           <div className="bp-wrap bp-top__in">
-            {d.logo ? <img src={d.logo} alt="" className="bp-logo" /> : <strong>{company?.name || project.title}</strong>}
+            {mediaSrc(d.logo) ? <img src={mediaSrc(d.logo)} alt="" className="bp-logo" /> : <strong>{company?.name || project.title}</strong>}
             <span>{company?.tradeName || company?.name || "MDS Solution"}</span>
           </div>
         </header>
       ) : null}
+      {mediaSrc(project.cover) && !project.blocks.some((block) => block.type === "hero") ? (
+        <div className="bp-cover">
+          <img src={mediaSrc(project.cover)} alt="" />
+        </div>
+      ) : null}
       {project.blocks.map((block) => (
-        <BlockView key={block.id} block={block} projectId={project.id} preview={preview} />
+        <BlockView key={block.id} block={block} projectId={project.id} preview={preview} cover={project.cover} />
       ))}
       {d.showFooter ? (
         <footer className="bp-foot">

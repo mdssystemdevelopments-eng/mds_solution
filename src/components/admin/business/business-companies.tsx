@@ -7,6 +7,7 @@ import { AdminPage } from "@/components/admin/admin-page";
 import { BusinessNav } from "@/components/admin/business/business-nav";
 import { ImageField } from "@/components/admin/cms/image-field";
 import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
+import { mediaSrc } from "@/lib/business/helpers";
 import type { BusinessCompany } from "@/lib/business/types";
 
 const empty: Omit<BusinessCompany, "id" | "createdAt" | "updatedAt"> = {
@@ -162,7 +163,7 @@ export function BusinessCompanies() {
             <ul className="biz-list">
               {companies.map((item) => (
                 <li key={item.id} className="biz-row">
-                  <div className="biz-row__cover">{item.logo ? <img src={item.logo} alt="" /> : <span />}</div>
+                  <div className="biz-row__cover">{mediaSrc(item.logo) ? <img src={mediaSrc(item.logo)} alt="" /> : <span />}</div>
                   <div className="biz-row__body">
                     <strong>{item.name}</strong>
                     <p>{item.tradeName || item.email || "Sem contato"}</p>

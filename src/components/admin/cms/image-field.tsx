@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
 import { Field, Input } from "@/components/admin/cms/form-fields";
+import { mediaSrc } from "@/lib/business/helpers";
 
 export function ImageField({
   label,
@@ -41,13 +42,13 @@ export function ImageField({
   return (
     <Field label={label} hint={hint ?? "JPG, PNG, GIF, WEBP, AVIF ou SVG. Até 3,5 MB."}>
       <div className="cms-image-field">
-        {value ? (
+        {mediaSrc(value) ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={value} alt="" className="cms-image-field__preview" />
+          <img src={mediaSrc(value)} alt="" className="cms-image-field__preview" />
         ) : (
           <div className="cms-image-field__empty">Sem imagem</div>
         )}
-        <Input value={value} onChange={onChange} placeholder="/uploads/arquivo.jpg" />
+        <Input value={value} onChange={(v) => onChange(mediaSrc(v) || v)} placeholder="/api/media/arquivo.jpg" />
         <label className="cms-image-field__pick">
           <input
             type="file"
@@ -125,7 +126,7 @@ export function GalleryField({
             {values.map((url, i) => (
               <li key={`${url}-${i}`} className="cms-gallery__item">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" />
+                <img src={mediaSrc(url) || url} alt="" />
                 <button type="button" className="cms-gallery__remove" onClick={() => removeAt(i)}>
                   Remover
                 </button>

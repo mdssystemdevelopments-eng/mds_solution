@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
 import { slugify } from "@/modules/shared/utils/slugify";
-import { newBusinessId, sanitizePlain } from "@/lib/business/helpers";
+import { mediaSrc, newBusinessId, sanitizePlain } from "@/lib/business/helpers";
 import { hashBusinessPassword } from "@/lib/business/password";
 import { listCompanies, listProjects, listVisits, saveProject, slugTaken } from "@/lib/business/store";
 import { templateBlocks, templateDesign } from "@/lib/business/templates";
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
     slug,
     description: sanitizePlain(body.description, 2000),
     companyId: sanitizePlain(body.companyId, 80),
-    cover: sanitizePlain(body.cover, 400),
+    cover: mediaSrc(sanitizePlain(body.cover, 500)),
     type,
     template,
     status: "draft",
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     seo: {
       title,
       description: sanitizePlain(body.description, 180),
-      ogImage: sanitizePlain(body.cover, 400),
+      ogImage: mediaSrc(sanitizePlain(body.cover, 500)),
       robots: "noindex",
     },
     blocks: templateBlocks(template, title),

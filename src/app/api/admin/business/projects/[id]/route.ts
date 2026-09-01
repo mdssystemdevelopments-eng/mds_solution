@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/supabase/require-admin";
 import { slugify } from "@/modules/shared/utils/slugify";
 import { deleteProject, getProject, saveProject, slugTaken } from "@/lib/business/store";
 import { hashBusinessPassword } from "@/lib/business/password";
-import { sanitizeHtml, sanitizePlain } from "@/lib/business/helpers";
+import { mediaSrc, sanitizeHtml, sanitizePlain } from "@/lib/business/helpers";
 import {
   BLOCK_TYPES,
   BUSINESS_STATUSES,
@@ -23,8 +23,22 @@ function cleanBlocks(input: unknown): BusinessBlock[] {
     const item = raw as Record<string, unknown>;
     const type = BLOCK_TYPES.includes(item.type as BusinessBlock["type"]) ? (item.type as BusinessBlock["type"]) : "text";
     const content = item.content && typeof item.content === "object" ? (item.content as Record<string, unknown>) : {};
-    if (type === "html" && typeof content.html === "string") content.html = sanitizeHtml(content.html);
+    if ((type === "html" || type === "text") && typeof content.html === "string") {
+      content.html = sanitizeHtml(content.html);
+    }
     if (typeof content.text === "string") content.text = sanitizePlain(content.text, 8000);
+    for (const key of ["image", "src", "thumb", "logo", "ogImage"]) {
+      if (typeof content[key] === "string") content[key] = mediaSrc(content[key]);
+    }
+    if (Array.isArray(content.images)) content.images = content.images.map(mediaSrc);
+    if (Array.isArray(content.items)) {
+      content.items = content.items.map((item) => {
+        if (!item || typeof item !== "object") return item;
+        const row = item as Record<string, unknown>;
+        if (typeof row.image === "string") row.image = mediaSrc(row.image);
+        return row;
+      });
+    }
     return {
       id: sanitizePlain(item.id || `block_${Math.random().toString(36).slice(2, 8)}`, 60),
       type,
@@ -68,7 +82,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     slug,
     description: sanitizePlain(body.description ?? current.description, 2000),
     companyId: sanitizePlain(body.companyId ?? current.companyId, 80),
-    cover: sanitizePlain(body.cover ?? current.cover, 400),
+    cover: mediaSrc(sanitizePlain(body.cover ?? current.cover, 500)),
     type: BUSINESS_TYPES.includes(body.type as BusinessProject["type"]) ? (body.type as BusinessProject["type"]) : current.type,
     template: BUSINESS_TEMPLATES.includes(body.template as BusinessProject["template"])
       ? (body.template as BusinessProject["template"])
@@ -79,11 +93,19 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
     visibility: BUSINESS_VISIBILITIES.includes(body.visibility as BusinessProject["visibility"])
       ? (body.visibility as BusinessProject["visibility"])
       : current.visibility,
-    design: { ...DEFAULT_DESIGN, ...(typeof body.design === "object" && body.design ? body.design : current.design) },
+    design: {
+      ...DEFAULT_DESIGN,
+      ...(typeof body.design === "object" && body.design ? body.design : current.design),
+      logo: mediaSrc(
+        (typeof body.design === "object" && body.design
+          ? (body.design as { logo?: string }).logo
+          : current.design.logo) ?? current.design.logo,
+      ),
+    },
     seo: {
       title: sanitizePlain((body.seo as { title?: string } | undefined)?.title ?? current.seo.title, 160),
       description: sanitizePlain((body.seo as { description?: string } | undefined)?.description ?? current.seo.description, 220),
-      ogImage: sanitizePlain((body.seo as { ogImage?: string } | undefined)?.ogImage ?? current.seo.ogImage, 400),
+      ogImage: mediaSrc(sanitizePlain((body.seo as { ogImage?: string } | undefined)?.ogImage ?? current.seo.ogImage, 500)),
       robots: (body.seo as { robots?: "index" | "noindex" } | undefined)?.robots === "index" ? "index" : "noindex",
     },
     blocks: body.blocks ? cleanBlocks(body.blocks) : current.blocks,

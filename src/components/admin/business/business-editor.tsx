@@ -557,7 +557,10 @@ function BlockFields({
       ) : null}
 
       {block.type === "text" || block.type === "html" ? (
-        <Field label="Conteudo">
+        <Field
+          label="Conteudo"
+          hint={block.type === "html" ? "Cole so o trecho da pagina, sem html, head, body ou CSS de tela cheia." : undefined}
+        >
           <Textarea value={String(c.html ?? "")} onChange={(v) => set("html", v)} rows={8} />
         </Field>
       ) : null}

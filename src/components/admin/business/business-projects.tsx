@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api-fetch";
 import { AdminPage } from "@/components/admin/admin-page";
 import { BusinessNav } from "@/components/admin/business/business-nav";
 import { Input } from "@/components/admin/cms/form-fields";
+import { mediaSrc } from "@/lib/business/helpers";
 import { STATUS_LABELS, VISIBILITY_LABELS, type BusinessStatus } from "@/lib/business/types";
 
 type Row = {
@@ -98,7 +99,7 @@ export function BusinessProjects() {
         <ul className="biz-list">
           {visible.map((item) => (
             <li key={item.id} className="biz-row">
-              <div className="biz-row__cover">{item.cover ? <img src={item.cover} alt="" /> : <span />}</div>
+              <div className="biz-row__cover">{mediaSrc(item.cover) ? <img src={mediaSrc(item.cover)} alt="" /> : <span />}</div>
               <div className="biz-row__body">
                 <strong>{item.title}</strong>
                 <p>

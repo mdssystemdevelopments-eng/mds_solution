@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
 import { AdminPage } from "@/components/admin/admin-page";
 import { BusinessNav } from "@/components/admin/business/business-nav";
+import { mediaSrc } from "@/lib/business/helpers";
 import { STATUS_LABELS, VISIBILITY_LABELS } from "@/lib/business/types";
 
 type Dash = {
@@ -106,7 +107,7 @@ export function BusinessDashboard() {
             <ul className="biz-list">
               {data.recent.map((item) => (
                 <li key={item.id} className="biz-row">
-                  <div className="biz-row__cover">{item.cover ? <img src={item.cover} alt="" /> : <span />}</div>
+                  <div className="biz-row__cover">{mediaSrc(item.cover) ? <img src={mediaSrc(item.cover)} alt="" /> : <span />}</div>
                   <div className="biz-row__body">
                     <strong>{item.title}</strong>
                     <p>
