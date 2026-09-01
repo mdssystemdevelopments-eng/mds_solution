@@ -1708,7 +1708,7 @@ body:has(.page-bg) {
   position: fixed;
   right: 1.25rem;
   bottom: calc(1.25rem + 3.25rem + 0.75rem);
-  z-index: 100;
+  z-index: 200;
   display: flex;
   width: 2.75rem;
   height: 2.75rem;
@@ -1739,6 +1739,13 @@ body:has(.page-bg) {
 .scroll-top:hover {
   border-color: var(--accent);
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5), 0 0 22px rgba(0, 212, 255, 0.4);
+}
+
+body:has(.site-overlay) .scroll-top,
+body:has(.site-overlay) .wa-float {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
 }
 
 @media (min-width: 640px) {
@@ -2021,7 +2028,7 @@ body:has(.page-bg) {
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
-  z-index: 40;
+  z-index: 200;
   display: flex;
   width: 3.25rem;
   height: 3.25rem;

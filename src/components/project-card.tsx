@@ -90,7 +90,7 @@ export function ProjectCard({
       </article>
 
       {open && photos.length > 0 ? (
-        <div className="project-gallery" role="dialog" aria-modal="true" aria-label={item.name} onClick={close}>
+        <div className="project-gallery site-overlay" role="dialog" aria-modal="true" aria-label={item.name} onClick={close}>
           <div className="project-gallery__frame" onClick={(e) => e.stopPropagation()}>
             <div className="project-gallery__head">
               <p className="project-gallery__title">{item.name}</p>

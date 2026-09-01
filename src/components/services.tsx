@@ -160,7 +160,7 @@ function ServiceRequestModal({
   }
 
   return (
-    <div className="service-modal" role="presentation" onClick={onClose}>
+    <div className="service-modal site-overlay" role="presentation" onClick={onClose}>
       <form
         className="service-modal__panel panel glass"
         role="dialog"
