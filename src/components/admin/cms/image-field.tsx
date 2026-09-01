@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api-fetch";
 import { Field, Input } from "@/components/admin/cms/form-fields";
 
 export function ImageField({
@@ -22,7 +23,7 @@ export function ImageField({
     try {
       const form = new FormData();
       form.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: form });
+      const res = await apiFetch("/api/admin/upload", { method: "POST", body: form });
       const json = (await res.json()) as { url?: string; error?: string };
       if (!res.ok || !json.url) {
         toast.error(json.error || "Falha no upload");
@@ -38,7 +39,7 @@ export function ImageField({
   }
 
   return (
-    <Field label={label} hint={hint ?? "JPG, PNG, GIF, WEBP, AVIF ou SVG. Até 8 MB."}>
+    <Field label={label} hint={hint ?? "JPG, PNG, GIF, WEBP, AVIF ou SVG. Até 3,5 MB."}>
       <div className="cms-image-field">
         {value ? (
           // eslint-disable-next-line @next/next/no-img-element

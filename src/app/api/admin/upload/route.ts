@@ -1,14 +1,12 @@
 import { randomBytes } from "crypto";
-import { mkdir, readdir, unlink, writeFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { deleteUpload, listUploads, saveUpload } from "@/lib/db/site-uploads";
 
 export const runtime = "nodejs";
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 3.5 * 1024 * 1024;
 const MIME_EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
@@ -50,16 +48,7 @@ function safeName(name: string): boolean {
 export async function GET() {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
-
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  const files = (await readdir(UPLOAD_DIR))
-    .filter((name) => name !== ".gitkeep" && safeName(name))
-    .map((name) => ({
-      name,
-      url: `/uploads/${name}`,
-    }))
-    .reverse();
-
+  const files = await listUploads();
   return NextResponse.json({ files });
 }
 
@@ -82,7 +71,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Selecione um arquivo de imagem." }, { status: 400 });
   }
   if (file.size <= 0 || file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Imagem deve ter até 8 MB." }, { status: 400 });
+    return NextResponse.json({ error: "Imagem deve ter até 3,5 MB." }, { status: 400 });
   }
 
   const buf = Buffer.from(await file.arrayBuffer());
@@ -94,12 +83,17 @@ export async function POST(req: Request) {
     );
   }
 
-  const ext = MIME_EXT[mime];
-  const name = `${Date.now()}-${randomBytes(6).toString("hex")}${ext}`;
-  await mkdir(UPLOAD_DIR, { recursive: true });
-  await writeFile(path.join(UPLOAD_DIR, name), buf);
-
-  return NextResponse.json({ ok: true, url: `/uploads/${name}`, name });
+  const name = `${Date.now()}-${randomBytes(6).toString("hex")}${MIME_EXT[mime]}`;
+  try {
+    const saved = await saveUpload(name, mime, buf);
+    return NextResponse.json({ ok: true, url: saved.url, name });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Falha ao gravar imagem.";
+    return NextResponse.json(
+      { error: msg, hint: "Confira DATABASE_URL no ambiente da Vercel." },
+      { status: 500 },
+    );
+  }
 }
 
 export async function DELETE(req: Request) {
@@ -118,9 +112,8 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Nome inválido." }, { status: 400 });
   }
 
-  try {
-    await unlink(path.join(UPLOAD_DIR, name));
-  } catch {
+  const removed = await deleteUpload(name);
+  if (!removed) {
     return NextResponse.json({ error: "Arquivo não encontrado." }, { status: 404 });
   }
 

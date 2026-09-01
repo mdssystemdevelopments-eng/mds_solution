@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/api-fetch";
 
 type FileItem = { name: string; url: string };
 
@@ -10,7 +11,7 @@ export function MediaLibrary() {
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    const res = await fetch("/api/admin/upload");
+    const res = await apiFetch("/api/admin/upload");
     const json = (await res.json()) as { files?: FileItem[]; error?: string };
     if (!res.ok) {
       toast.error(json.error || "Não foi possível listar as mídias.");
@@ -28,7 +29,7 @@ export function MediaLibrary() {
     try {
       const form = new FormData();
       form.append("file", file);
-      const res = await fetch("/api/admin/upload", { method: "POST", body: form });
+      const res = await apiFetch("/api/admin/upload", { method: "POST", body: form });
       const json = (await res.json()) as { error?: string };
       if (!res.ok) {
         toast.error(json.error || "Falha no upload");
@@ -43,7 +44,7 @@ export function MediaLibrary() {
 
   async function remove(name: string) {
     if (!window.confirm(`Excluir ${name}?`)) return;
-    const res = await fetch("/api/admin/upload", {
+    const res = await apiFetch("/api/admin/upload", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),

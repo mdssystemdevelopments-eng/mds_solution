@@ -1,32 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isAdminSurfacePath, isAllowedAdminHost, isLocalAdminHost, normalizeHost } from "@/lib/admin-host";
-
-function deny(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  return new NextResponse("Not Found", {
-    status: 404,
-    headers: { "content-type": "text/plain; charset=utf-8" },
-  });
-}
+import { getAdminHost, isLocalAdminHost, normalizeHost } from "@/lib/admin-host";
 
 export function middleware(req: NextRequest) {
-  const host = normalizeHost(req.headers.get("host"));
+  const host = normalizeHost(req.headers.get("x-forwarded-host") || req.headers.get("host"));
   const { pathname } = req.nextUrl;
 
-  if (isLocalAdminHost(host)) {
+  if (isLocalAdminHost(host) || host.endsWith(".vercel.app")) {
     return NextResponse.next();
   }
 
-  const onAdminHost = isAllowedAdminHost(host);
-
-  if (!onAdminHost && isAdminSurfacePath(pathname)) {
-    return deny(req);
-  }
-
-  if (onAdminHost && (pathname === "/" || !isAdminSurfacePath(pathname))) {
+  if (host === getAdminHost() && pathname === "/") {
     const url = req.nextUrl.clone();
     url.pathname = "/loginsolution";
     url.search = "";
@@ -37,7 +21,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|uploads/|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|mp4|webm|woff2)$).*)",
-  ],
+  matcher: ["/((?!_next/|favicon.ico|uploads/|api/media/|.*\\..*).*)"],
 };

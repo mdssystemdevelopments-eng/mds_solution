@@ -7,7 +7,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 import { getRequestLocale } from "@/i18n/get-locale";
 import { deepMerge } from "@/lib/deep-merge";
 import { defaultSiteContent } from "@/lib/default-site-content";
-import { isNeonConfigured, getSql } from "@/lib/db/neon";
+import { isNeonConfigured, getSql, ensureSiteTables } from "@/lib/db/neon";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseServerClientOptional } from "@/lib/supabase/server";
 import type { SiteContent } from "@/types/site-content";
@@ -32,6 +32,7 @@ function readBaseContentFromFile(): SiteContent | null {
 
 async function readBaseContentFromNeon(): Promise<SiteContent | null> {
   try {
+    await ensureSiteTables();
     const sql = getSql();
     const rows = await sql`SELECT content FROM site_content WHERE locale = ${DEFAULT_LOCALE} LIMIT 1`;
     const row = rows[0] as { content?: unknown } | undefined;
@@ -97,6 +98,7 @@ export async function writeSiteContent(
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   if (isNeonConfigured()) {
     try {
+      await ensureSiteTables();
       const sql = getSql();
       await sql`
         INSERT INTO site_content (locale, content, updated_by, updated_at)

@@ -20,7 +20,7 @@ export function normalizeHost(hostHeader: string | null | undefined): string {
 }
 
 export function isLocalAdminHost(host: string): boolean {
-  return host === "localhost" || host === "127.0.0.1";
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]";
 }
 
 export function isAllowedAdminHost(hostHeader: string | null | undefined): boolean {

@@ -4,6 +4,8 @@ import { deepMerge } from "@/lib/deep-merge";
 import { defaultSiteContent } from "@/lib/default-site-content";
 import { requireAdmin } from "@/lib/supabase/require-admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
@@ -35,8 +37,7 @@ export async function PUT(req: Request) {
     return NextResponse.json(
       {
         error: wrote.error,
-        hint:
-          "Verifique Supabase (schema/RLS) e variáveis de ambiente. Também confirme se seu usuário está como role=admin na tabela profiles.",
+        hint: "Não foi possível gravar o conteúdo. Confira DATABASE_URL no ambiente.",
       },
       { status: 500 },
     );

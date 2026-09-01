@@ -8,13 +8,15 @@ import { deepMerge } from "@/lib/deep-merge";
 import type { SiteContent } from "@/types/site-content";
 
 export function useAdminContent() {
-  const [content, setContent] = useState<SiteContent | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState<SiteContent>(defaultSiteContent);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError("");
     try {
       const res = await apiFetch("/api/admin/content");
       const json = await res.json().catch(() => ({}));
@@ -29,9 +31,8 @@ export function useAdminContent() {
       setDirty(false);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Não foi possível carregar o conteúdo.";
+      setError(msg);
       toast.error(msg);
-      setContent(defaultSiteContent);
-      setDirty(false);
     } finally {
       setLoading(false);
     }
@@ -43,14 +44,12 @@ export function useAdminContent() {
 
   function patch(updater: (prev: SiteContent) => SiteContent) {
     setContent((prev) => {
-      if (!prev) return prev;
       setDirty(true);
       return updater(prev);
     });
   }
 
   async function save() {
-    if (!content) return;
     setSaving(true);
     try {
       const res = await apiFetch("/api/admin/content", {
@@ -60,14 +59,17 @@ export function useAdminContent() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || json.hint || "Erro ao salvar");
-      toast.success("Alterações salvas!");
+      setError("");
+      toast.success("Alterações salvas. Atualize o site para ver o resultado.");
       setDirty(false);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erro ao salvar");
+      const msg = e instanceof Error ? e.message : "Erro ao salvar";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
   }
 
-  return { content, loading, saving, dirty, load, patch, save, setContent };
+  return { content, loading, saving, dirty, error, load, patch, save, setContent };
 }

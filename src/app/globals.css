@@ -2231,6 +2231,42 @@ body:has(.page-bg) {
   gap: 0.5rem;
 }
 
+.cms-alert {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(120, 53, 15, 0.35);
+  color: #fde68a;
+  font-size: 0.875rem;
+}
+
+.cms-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 700px) {
+  .cms-toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cms-toolbar__field {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cms-editor--open {
+  max-height: none;
+  overflow: visible;
+  padding: 1.25rem 0;
+}
+
 .cms-dirty {
   font-size: 0.75rem;
   font-weight: 600;
