@@ -27,8 +27,13 @@ export function HomeFeaturedWork({ content }: { content: SiteContent }) {
           </Link>
         </div>
         <div className="grid-3" style={{ marginTop: "1.25rem" }}>
-          {items.map((item) => (
-            <ProjectCard key={item.name} item={item} categoryLabels={content.ui.categoryLabels} />
+          {items.map((item, index) => (
+            <ProjectCard
+              key={item.name}
+              item={item}
+              categoryLabels={content.ui.categoryLabels}
+              featured={index === 0}
+            />
           ))}
         </div>
       </div>

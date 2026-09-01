@@ -1141,6 +1141,22 @@ body:has(.page-bg) {
   overflow: hidden;
 }
 
+@media (min-width: 640px) {
+  .grid-2 > .project-card--featured {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-3 > .project-card--featured {
+    grid-column: span 2;
+  }
+
+  .project-card--featured .project-card__img-wrap {
+    aspect-ratio: 21 / 9;
+  }
+}
+
 .project-card__img-wrap {
   position: relative;
   aspect-ratio: 16 / 10;

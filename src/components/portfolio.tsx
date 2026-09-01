@@ -37,8 +37,13 @@ export function Portfolio({ content }: { content: SiteContent }) {
         </div>
 
         <div className="grid-2" style={{ marginTop: "1.25rem" }}>
-          {filtered.map((item) => (
-            <ProjectCard key={item.name} item={item} categoryLabels={labels} />
+          {filtered.map((item, index) => (
+            <ProjectCard
+              key={item.name}
+              item={item}
+              categoryLabels={labels}
+              featured={filter === "todos" && index === 0}
+            />
           ))}
         </div>
       </div>

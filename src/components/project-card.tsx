@@ -4,12 +4,14 @@ import type { PortfolioItem } from "@/types/site-content";
 export function ProjectCard({
   item,
   categoryLabels,
+  featured = false,
 }: {
   item: PortfolioItem;
   categoryLabels: Record<string, string>;
+  featured?: boolean;
 }) {
   return (
-    <article className="project-card">
+    <article className={featured ? "project-card project-card--featured" : "project-card"}>
       <div className="project-card__img-wrap">
         <Image
           src={item.image}
