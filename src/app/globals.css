@@ -852,17 +852,23 @@ body:has(.page-bg) {
 }
 
 
-.hero__stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-top: 2rem;
+.hero__preview-shot {
+  margin: 2rem 0 0;
+  max-width: min(100%, 42rem);
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: #030508;
+  box-shadow: 0 0 48px rgba(0, 194, 255, 0.16), 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
-@media (min-width: 640px) {
-  .hero__stats {
-    grid-template-columns: repeat(4, 1fr);
-  }
+.hero__preview-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top left;
 }
 
 .stat {

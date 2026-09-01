@@ -2,11 +2,15 @@ import Link from "next/link";
 import { whatsappHref } from "@/lib/whatsapp";
 import type { SiteContent } from "@/types/site-content";
 
+function previewSrc(src: string) {
+  return src.replace(/\.png$/i, ".svg");
+}
+
 export function Hero({ content }: { content: SiteContent }) {
   const h = content.hero;
   const wa = content.contact.whatsappNumber;
   const msg = content.contact.whatsappDefaultMessage;
-  const stats = h.stats ?? [];
+  const preview = content.portfolio.items[0];
 
   return (
     <section className="hero">
@@ -38,14 +42,13 @@ export function Hero({ content }: { content: SiteContent }) {
           </div>
         </div>
 
-        <div className="hero__stats">
-          {stats.map((s) => (
-            <div key={s.label} className="stat">
-              <span className="stat__value">{s.value}</span>
-              <span className="stat__label">{s.label}</span>
-            </div>
-          ))}
-        </div>
+        {preview?.image ? (
+          <figure className="hero__preview-shot">
+            {/* SVG mockups do portfólio — next/image não serve SVG estático */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={previewSrc(preview.image)} alt={preview.name} />
+          </figure>
+        ) : null}
       </div>
     </section>
   );
