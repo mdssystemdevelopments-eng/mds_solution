@@ -1,24 +1,17 @@
 import Link from "next/link";
 import { whatsappHref } from "@/lib/whatsapp";
 import type { SiteContent } from "@/types/site-content";
-import { HeroLogoVideo } from "@/components/hero-logo-video";
-
-const stats = [
-  { value: "29+", label: "Projetos entregues" },
-  { value: "91+", label: "Serviços" },
-  { value: "100%", label: "Atendimento direto" },
-  { value: "24h", label: "Resposta WhatsApp" },
-];
 
 export function Hero({ content }: { content: SiteContent }) {
   const h = content.hero;
   const wa = content.contact.whatsappNumber;
   const msg = content.contact.whatsappDefaultMessage;
+  const stats = h.stats ?? [];
 
   return (
     <section className="hero">
       <div className="wrap">
-        <div className="hero__grid">
+        <div className="hero__grid hero__grid--text">
           <div className="panel glass">
             <p className="eyebrow hero__badge">{h.badge}</p>
             <h1 className="h1" style={{ marginTop: "0.75rem" }}>
@@ -30,7 +23,7 @@ export function Hero({ content }: { content: SiteContent }) {
               {h.subheadline}
             </p>
             <div className="hero__actions">
-              <Link href="/area-cliente" className="btn">
+              <Link href={h.primaryCtaHref || "/area-cliente"} className="btn">
                 {h.primaryCtaLabel}
               </Link>
               <a
@@ -42,10 +35,6 @@ export function Hero({ content }: { content: SiteContent }) {
                 {h.secondaryCtaLabel}
               </a>
             </div>
-          </div>
-
-          <div className="hero__preview hero__preview--logo">
-            <HeroLogoVideo />
           </div>
         </div>
 

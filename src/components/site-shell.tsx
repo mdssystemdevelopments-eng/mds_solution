@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { TrustBadges } from "@/components/trust-badges";
 import { WhatsAppFloat } from "@/components/whatsapp-float";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { SiteBackdrop } from "@/components/site-backdrop";
@@ -19,7 +21,9 @@ export function SiteShell({
 }) {
   return (
     <LocaleProvider locale={locale} content={content}>
-      <PageLoader />
+      <Suspense fallback={null}>
+        <PageLoader />
+      </Suspense>
       <SiteBackdrop />
       <div className="site">
         <a href="#conteudo" className="sr-only">
@@ -27,6 +31,7 @@ export function SiteShell({
         </a>
         <Navbar />
         <main id="conteudo">{children}</main>
+        <TrustBadges />
         <Footer content={content} />
         <WhatsAppFloat
           whatsappNumber={content.contact.whatsappNumber}

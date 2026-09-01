@@ -25,13 +25,18 @@ function applyPatch(base: SiteContent, patch: LocalePatch): SiteContent {
   ) as SiteContent;
 
   if (services) {
+    const { digital, tech, request, ...serviceRest } = services;
     result = {
       ...result,
       services: {
         ...result.services,
-        ...services,
-        digital: mergeByIndex(result.services.digital, services.digital as Partial<ServiceItem>[]),
-        tech: mergeByIndex(result.services.tech, services.tech as Partial<ServiceItem>[]),
+        ...serviceRest,
+        request: {
+          ...result.services.request,
+          ...(request ?? {}),
+        },
+        digital: mergeByIndex(result.services.digital, digital as Partial<ServiceItem>[]),
+        tech: mergeByIndex(result.services.tech, tech as Partial<ServiceItem>[]),
       },
     };
   }

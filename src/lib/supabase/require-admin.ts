@@ -1,6 +1,8 @@
 import type { User } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { headers } from "next/headers";
 import { assertAdmin } from "@/lib/admin-auth";
+import { isAllowedAdminHost } from "@/lib/admin-host";
 import { isSupabaseConfigured } from "./env";
 import { createSupabaseServerClientOptional } from "./server";
 
@@ -11,6 +13,11 @@ type AdminOk =
 type AdminFail = { ok: false; status: number; error: string };
 
 export async function requireAdmin(): Promise<AdminOk | AdminFail> {
+  const host = (await headers()).get("host");
+  if (!isAllowedAdminHost(host)) {
+    return { ok: false, status: 404, error: "Not found" };
+  }
+
   if (!isSupabaseConfigured()) {
     const legacy = await assertAdmin();
     if (!legacy.ok) {

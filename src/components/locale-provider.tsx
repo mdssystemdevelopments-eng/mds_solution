@@ -78,3 +78,7 @@ export function useLocaleContext(): LocaleContextValue {
 export function useSiteContent(): SiteContent {
   return useLocaleContext().content;
 }
+
+export function useOptionalSiteContent(): SiteContent | null {
+  return useContext(LocaleContext)?.content ?? null;
+}

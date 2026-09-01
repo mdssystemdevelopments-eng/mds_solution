@@ -5,7 +5,8 @@ export type AdminSectionId =
   | "ui.homeServices"
   | "ui.homeProcess"
   | "ui.homeCta"
-  | "ui.homeFeatured";
+  | "ui.homeFeatured"
+  | "ui.system";
 
 export type AdminPageDef = {
   id: string;
@@ -20,12 +21,14 @@ export const ADMIN_PAGES: AdminPageDef[] = [
     id: "global",
     label: "Global",
     previewPath: "/",
-    description: "Menu, SEO, contatos e rodapé — aparecem em todo o site.",
+    description: "Menu, SEO, imagens, contatos e rodapé. Vale para o site inteiro.",
     sections: [
-      { id: "seo", label: "SEO", hint: "Título, descrição e palavras-chave para Google." },
+      { id: "media", label: "Imagens do site", hint: "Logo, fundo da home, fundos de página e favicon." },
+      { id: "seo", label: "SEO", hint: "Título, descrição e palavras-chave para o Google." },
       { id: "nav", label: "Menu", hint: "Links do cabeçalho." },
-      { id: "contact", label: "WhatsApp & E-mail", hint: "Contatos usados nos botões flutuantes." },
+      { id: "contact", label: "WhatsApp e e-mail", hint: "Contatos dos botões e do rodapé." },
       { id: "footer", label: "Rodapé", hint: "Marca, links e redes sociais." },
+      { id: "ui.system", label: "Textos do sistema", hint: "Loader, menu e botões de interface." },
     ],
   },
   {
@@ -59,7 +62,7 @@ export const ADMIN_PAGES: AdminPageDef[] = [
     label: "Página Serviços",
     previewPath: "/servicos",
     description: "Listas de serviços digitais e assistência técnica.",
-    sections: [{ id: "services", label: "Serviços", hint: "Títulos, emojis e listas de serviços." }],
+    sections: [{ id: "services", label: "Serviços", hint: "Listas, textos e formulário de solicitação." }],
   },
   {
     id: "portfolio",

@@ -22,6 +22,6 @@ services:
       - key: ADMIN_PASSWORD
         sync: false
       - key: CORS_ORIGIN
-        value: https://mdssolution.com.br,https://www.mdssolution.com.br
+        value: https://mdssolution.com.br,https://www.mdssolution.com.br,https://adminplus.mdssolution.com.br
       - key: COOKIE_SECURE
         value: "true"

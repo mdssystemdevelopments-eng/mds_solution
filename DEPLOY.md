@@ -42,7 +42,7 @@ Substitua `'{}'` pelo conteúdo JSON completo do arquivo.
 | `ADMIN_USERNAME` | E-mail do admin (ex.: `mathias@mdssolution.com.br`) |
 | `ADMIN_PASSWORD` | Senha forte |
 | `JWT_SECRET` | String aleatória longa (Render pode gerar) |
-| `CORS_ORIGIN` | `https://mdssolution.com.br,https://www.mdssolution.com.br` |
+| `CORS_ORIGIN` | `https://mdssolution.com.br,https://www.mdssolution.com.br,https://adminplus.mdssolution.com.br` |
 | `COOKIE_SECURE` | `true` |
 | `NODE_ENV` | `production` |
 
@@ -65,6 +65,7 @@ Teste: `GET https://mds-api.onrender.com/health` → `{ "ok": true }`.
 | `DATABASE_URL` | Mesma string do Neon (SSR lê conteúdo do site) |
 | `RENDER_API_URL` | URL do Render, ex. `https://mds-api.onrender.com` |
 | `NEXT_PUBLIC_SITE_URL` | `https://mdssolution.com.br` |
+| `ADMIN_HOST` | `adminplus.mdssolution.com.br` |
 | `ADMIN_USERNAME` | Igual ao Render |
 | `ADMIN_PASSWORD` | Igual ao Render |
 | `ADMIN_SESSION_SECRET` | (Opcional) Mesmo valor que `JWT_SECRET` no Render |
@@ -86,7 +87,11 @@ No painel do Registro.br, para `mdssolution.com.br`:
 | **A** | `@` | `76.76.21.21` (IP da Vercel — confira na doc atual) |
 | **CNAME** | `www` | `cname.vercel-dns.com` |
 
-Na Vercel → **Settings → Domains** → adicione `mdssolution.com.br` e `www.mdssolution.com.br`.
+Na Vercel → **Settings → Domains** → adicione `mdssolution.com.br`, `www.mdssolution.com.br` e `adminplus.mdssolution.com.br`.
+
+| Tipo | Nome | Destino |
+|------|------|---------|
+| **CNAME** | `adminplus` | `cname.vercel-dns.com` |
 
 ### API (opcional)
 
@@ -100,9 +105,10 @@ Se usar só `RENDER_API_URL` (rewrite), o subdomínio `api` é opcional.
 
 ## 5. Login do painel
 
-- URL: `https://mdssolution.com.br/loginsolution`
+- URL: `https://adminplus.mdssolution.com.br`
 - Credenciais: `ADMIN_USERNAME` / `ADMIN_PASSWORD`
 - Após login: `/admin/conteudo`
+- `https://mdssolution.com.br/loginsolution` e `/admin` no site público retornam 404.
 
 ---
 

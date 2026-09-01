@@ -49,3 +49,7 @@ yarn-error.log*
 # PNGs de rascunho (não versionar)
 /*.png
 /workspace-assets/raw/**/*.png
+
+# uploads do CMS (permanecem no servidor)
+/public/uploads/*
+!/public/uploads/.gitkeep

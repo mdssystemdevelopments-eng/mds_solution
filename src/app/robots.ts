@@ -4,7 +4,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mdssolution.com.br"
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api/admin"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api/admin", "/loginsolution"] }],
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

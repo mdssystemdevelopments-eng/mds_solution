@@ -1,16 +1,22 @@
 import { ASSETS } from "@/modules/shared/constants/assets";
+import type { SiteContent } from "@/types/site-content";
 
-/** Fundo fixo por rota (imagens em /public/bg). Home usa wallpaper principal. */
-export const PAGE_BACKGROUNDS: Record<string, string> = {
-  "/sobre": ASSETS.backgrounds.pages.sobre,
-  "/servicos": ASSETS.backgrounds.pages.servicos,
-  "/portfolio": ASSETS.backgrounds.pages.portfolio,
-  "/contato": ASSETS.backgrounds.pages.contato,
-  "/area-cliente": ASSETS.backgrounds.pages.areaCliente,
-  "/depoimentos": ASSETS.backgrounds.pages.sobre,
-};
-
-export function getPageBackground(pathname: string): string | null {
+export function getPageBackground(pathname: string, media?: SiteContent["media"]): string | null {
   if (pathname === "/" || pathname === "") return null;
-  return PAGE_BACKGROUNDS[pathname] ?? PAGE_BACKGROUNDS["/sobre"];
+  const backgrounds = media?.backgrounds ?? {
+    sobre: ASSETS.backgrounds.pages.sobre,
+    servicos: ASSETS.backgrounds.pages.servicos,
+    portfolio: ASSETS.backgrounds.pages.portfolio,
+    contato: ASSETS.backgrounds.pages.contato,
+    areaCliente: ASSETS.backgrounds.pages.areaCliente,
+  };
+  const map: Record<string, string> = {
+    "/sobre": backgrounds.sobre,
+    "/servicos": backgrounds.servicos,
+    "/portfolio": backgrounds.portfolio,
+    "/contato": backgrounds.contato,
+    "/area-cliente": backgrounds.areaCliente,
+    "/depoimentos": backgrounds.sobre,
+  };
+  return map[pathname] ?? backgrounds.sobre;
 }

@@ -53,7 +53,7 @@ export function VisualCms() {
       <header className="cms-topbar">
         <div>
           <h1 className="cms-topbar__title">Editor do site</h1>
-          <p className="cms-topbar__sub">Escolha a página, depois a seção que deseja editar.</p>
+          <p className="cms-topbar__sub">Escolha a página e a seção. Textos e imagens entram no mesmo editor. Salve para publicar.</p>
         </div>
         <div className="cms-topbar__actions">
           {dirty && <span className="cms-dirty">Alterações não salvas</span>}

@@ -7,6 +7,8 @@ import {
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseServerClientOptional } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
+import { isAllowedAdminHost } from "@/lib/admin-host";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
 
 function safeCompare(a: string, b: string): boolean {
   try {
@@ -20,6 +22,14 @@ function safeCompare(a: string, b: string): boolean {
 }
 
 export async function POST(req: Request) {
+  if (!isAllowedAdminHost(req.headers.get("host"))) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (!rateLimit(`login:${clientKey(req)}`, 8, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Muitas tentativas. Aguarde 15 minutos." }, { status: 429 });
+  }
+
   let body: { email?: string; username?: string; password?: string };
   try {
     body = await req.json();

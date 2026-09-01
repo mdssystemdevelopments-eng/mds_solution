@@ -19,11 +19,32 @@ const itUi = {
     title: "Tutto ciò che serve alla tua azienda in tecnologia",
     lead: "Dal sito all'ERP, con codice su misura e supporto vicino.",
     learnMore: "Scopri di più",
+    close: "Chiudi",
     items: [
-      { title: "Sviluppo Web", desc: "Siti, landing page e portali con performance e SEO." },
-      { title: "Sistemi & ERP", desc: "Vendite, magazzino, finanza e integrazioni." },
-      { title: "Applicazioni", desc: "App mobile e PWA collegate al tuo business." },
-      { title: "Assistenza tecnica", desc: "Infrastruttura, manutenzione e supporto aziendale." },
+      {
+        title: "Sviluppo Web",
+        desc: "Siti, landing page e portali con performance e SEO.",
+        details: "Creiamo siti istituzionali, landing page e portali su misura. L'obiettivo è un aspetto professionale, caricamento veloce e buona visibilità su Google.",
+        points: ["Layout allineato al brand", "Performance ed esperienza mobile", "Base tecnica pensata per la SEO", "Moduli, WhatsApp e integrazioni"],
+      },
+      {
+        title: "Sistemi & ERP",
+        desc: "Vendite, magazzino, finanza e integrazioni.",
+        details: "Quando il foglio di calcolo non basta più, costruiamo un sistema sui flussi reali: vendite, magazzino, finanza, anagrafiche e area riservata.",
+        points: ["Gestione vendite, magazzino e finanza", "Dati centralizzati con accessi controllati", "Integrazioni ERP, CRM e pagamenti", "Meno rilavorazioni e meno errori"],
+      },
+      {
+        title: "Applicazioni",
+        desc: "App mobile e PWA collegate al tuo business.",
+        details: "Sviluppiamo app mobile e PWA per clienti, team o uso interno, collegate al tuo sistema con login, notifiche e flussi quotidiani.",
+        points: ["App nativa o PWA, a seconda del caso", "Collegata ai dati aziendali", "Login, notifiche e area utente", "Pubblicazione ed evoluzione continua"],
+      },
+      {
+        title: "Assistenza tecnica",
+        desc: "Infrastruttura, manutenzione e supporto aziendale.",
+        details: "Ci occupiamo dell'hardware e del quotidiano: computer lenti, rete instabile, virus, formattazione e supporto per le aziende.",
+        points: ["Manutenzione di PC e notebook", "Formattazione, pulizia e ottimizzazione", "Rimozione di virus e minacce", "Supporto tecnico per le aziende"],
+      },
     ],
   },
   homeProcess: {

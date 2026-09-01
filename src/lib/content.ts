@@ -75,7 +75,7 @@ export const techServices = [
   {
     title: "Formatação e instalação de sistemas",
     description:
-      "Quando o Windows “travou de vez” ou você quer começar limpo, com drivers e programas essenciais organizados.",
+      "Quando o Windows travou de vez ou você quer começar limpo, com drivers e programas essenciais organizados.",
     benefits: [
       "Sistema limpo e responsivo",
       "Backup orientado antes de mexer",
@@ -127,7 +127,7 @@ export const techServices = [
     description:
       "Você em casa ou no escritório, precisando de alguém que explique sem arrogância e resolva sem enrolação.",
     benefits: [
-      "Sem “linguagem de TI” forçada",
+      "Sem linguagem de TI forçada",
       "Orçamento antes de autorizar serviço",
       "Respeito ao seu tempo e ao seu equipamento",
     ],

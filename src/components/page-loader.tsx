@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LoaderPanel } from "@/components/loader-panel";
 import { waitForPageReady } from "@/lib/wait-for-page-ready";
 
@@ -35,43 +35,47 @@ async function hideBootLoader() {
 
 export function PageLoader() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const [routePhase, setRoutePhase] = useState<Phase>("hidden");
-  const lastKeyRef = useRef<string>("");
+  const lastPathRef = useRef<string>("");
   const isFirstRouteRef = useRef(true);
 
   useEffect(() => {
     let cancelled = false;
 
+    const failsafe = window.setTimeout(() => {
+      if (!cancelled) void hideBootLoader();
+    }, 2800);
+
     const run = async () => {
       await waitForPageReady({
-        minMs: 600,
-        maxMs: 30000,
-        includeWindowLoad: true,
-        waitVideos: true,
+        minMs: 400,
+        maxMs: 2500,
+        includeWindowLoad: false,
+        waitVideos: false,
         waitImages: true,
       });
 
       if (cancelled) return;
+      window.clearTimeout(failsafe);
       await hideBootLoader();
     };
 
     void run();
     return () => {
       cancelled = true;
+      window.clearTimeout(failsafe);
     };
   }, []);
 
   useEffect(() => {
-    const key = `${pathname}?${searchParams?.toString() ?? ""}`;
     if (isFirstRouteRef.current) {
       isFirstRouteRef.current = false;
-      lastKeyRef.current = key;
+      lastPathRef.current = pathname;
       return;
     }
-    if (lastKeyRef.current === key) return;
-    lastKeyRef.current = key;
+    if (lastPathRef.current === pathname) return;
+    lastPathRef.current = pathname;
 
     let cancelled = false;
 
@@ -80,10 +84,10 @@ export function PageLoader() {
       setRoutePhase("show");
 
       await waitForPageReady({
-        minMs: 500,
-        maxMs: 20000,
+        minMs: 350,
+        maxMs: 2500,
         includeWindowLoad: false,
-        waitVideos: pathname === "/" || pathname === "",
+        waitVideos: false,
         waitImages: true,
       });
 
@@ -101,7 +105,7 @@ export function PageLoader() {
     return () => {
       cancelled = true;
     };
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   if (routePhase === "hidden") return null;
 

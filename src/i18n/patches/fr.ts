@@ -19,11 +19,32 @@ const frUi = {
     title: "Tout ce dont votre entreprise a besoin en technologie",
     lead: "Du site à l'ERP, avec du code sur mesure et un support proche.",
     learnMore: "En savoir plus",
+    close: "Fermer",
     items: [
-      { title: "Développement Web", desc: "Sites, landing pages et portails performants avec SEO." },
-      { title: "Systèmes & ERP", desc: "Gestion des ventes, stocks, finances et intégrations." },
-      { title: "Applications", desc: "Apps mobiles et PWA connectées à votre activité." },
-      { title: "Assistance technique", desc: "Infrastructure, maintenance et support entreprise." },
+      {
+        title: "Développement Web",
+        desc: "Sites, landing pages et portails performants avec SEO.",
+        details: "Nous créons des sites institutionnels, landing pages et portails sur mesure. L'objectif : un visuel pro, un chargement rapide et une bonne visibilité sur Google.",
+        points: ["Mise en page alignée à votre marque", "Performance et expérience mobile", "Base technique pensée pour le SEO", "Formulaires, WhatsApp et intégrations"],
+      },
+      {
+        title: "Systèmes & ERP",
+        desc: "Gestion des ventes, stocks, finances et intégrations.",
+        details: "Quand le tableur ne suffit plus, nous construisons un système autour de vos vrais flux : ventes, stocks, finances, fiches et espace privé.",
+        points: ["Gestion des ventes, stocks et finances", "Données centralisées avec accès contrôlé", "Intégrations ERP, CRM et paiements", "Moins de retravail et moins d'erreurs"],
+      },
+      {
+        title: "Applications",
+        desc: "Apps mobiles et PWA connectées à votre activité.",
+        details: "Nous développons des apps mobiles et PWA pour clients, équipes ou usage interne, connectées à votre système avec connexion et notifications.",
+        points: ["App native ou PWA selon le besoin", "Connectée aux données de l'entreprise", "Connexion, notifications et espace utilisateur", "Publication et évolution continue"],
+      },
+      {
+        title: "Assistance technique",
+        desc: "Infrastructure, maintenance et support entreprise.",
+        details: "Nous prenons en charge le matériel et le quotidien : ordinateurs lents, réseau instable, virus, formatage et support pour les entreprises.",
+        points: ["Maintenance PC et ordinateurs portables", "Formatage, nettoyage et optimisation", "Suppression de virus et menaces", "Support technique pour les entreprises"],
+      },
     ],
   },
   homeProcess: {

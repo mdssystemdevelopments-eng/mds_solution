@@ -62,6 +62,24 @@ export const defaultSiteContent: SiteContent = {
     ],
     cardFooterKicker: "Atendimento",
     cardFooterText: "Resposta rápida, orçamento transparente e suporte contínuo.",
+    stats: [
+      { value: "29+", label: "Projetos entregues" },
+      { value: "91+", label: "Serviços" },
+      { value: "100%", label: "Atendimento direto" },
+      { value: "24h", label: "Resposta WhatsApp" },
+    ],
+  },
+  media: {
+    logo: "/logo-mds.png",
+    favicon: "/favicon.svg",
+    homeWallpaper: "/wallpaper-cyber-eye.png",
+    backgrounds: {
+      sobre: "/bg/sobre.png",
+      servicos: "/bg/servicos.png",
+      portfolio: "/bg/projetos.png",
+      contato: "/bg/contato.png",
+      areaCliente: "/bg/area-cliente.png",
+    },
   },
   home: {
     sectionKicker: "Navegação",
@@ -111,14 +129,27 @@ export const defaultSiteContent: SiteContent = {
     title: "O que posso fazer por você",
     subtitle:
       "Do digital ao conserto na sua mesa, tudo explicado com clareza e com escopo e prazo combinados antes de começar.",
-    digitalEmoji: "💻",
+    digitalEmoji: "",
     digitalTitle: "Serviços digitais",
-    techEmoji: "🛠️",
+    techEmoji: "",
     techTitle: "Assistência técnica",
     techIntro:
       "Se o seu problema é hardware, sistema lento ou vírus chato, chama. Atendo pessoa física e também empresas que precisam de alguém estável para o dia a dia.",
     digital: digitalServices,
     tech: techServices,
+    request: {
+      cta: "Solicitar serviço",
+      title: "Solicitar este serviço",
+      lead: "Informe seus dados e o que precisa. Depois disso a mensagem é enviada.",
+      nameLabel: "Nome",
+      emailLabel: "E-mail",
+      phoneLabel: "Telefone",
+      detailsLabel: "Detalhes do pedido",
+      detailsPlaceholder: "Descreva o que precisa neste serviço, prazo e contexto.",
+      submit: "Enviar pelo WhatsApp",
+      cancel: "Cancelar",
+      validation: "Preencha o nome e o e-mail ou o telefone.",
+    },
   },
   portfolio: {
     sectionKicker: "Portfólio",
@@ -228,6 +259,27 @@ export const defaultSiteContent: SiteContent = {
     socials: [
       { href: "https://www.linkedin.com", label: "LinkedIn" },
       { href: "https://www.instagram.com", label: "Instagram" },
+    ],
+  },
+  trustBadges: {
+    title: "Segurança do site",
+    items: [
+      {
+        title: "Conexão protegida",
+        text: "Tráfego do site sob HTTPS quando publicado em domínio com certificado válido.",
+      },
+      {
+        title: "LGPD",
+        text: "Dados do formulário usados só para responder o pedido. Sem venda de lista.",
+      },
+      {
+        title: "Painel restrito",
+        text: "Área administrativa exige login. Sem acesso público a edição de conteúdo.",
+      },
+      {
+        title: "Envio consciente",
+        text: "Solicitação de serviço só segue depois que você confirma os dados no formulário.",
+      },
     ],
   },
   ui: defaultUiContent,

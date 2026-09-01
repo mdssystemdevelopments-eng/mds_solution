@@ -19,11 +19,32 @@ const deUi = {
     title: "Alles, was Ihr Unternehmen in Technologie braucht",
     lead: "Vom Website bis ERP, mit maßgeschneidertem Code und nahem Support.",
     learnMore: "Mehr erfahren",
+    close: "Schließen",
     items: [
-      { title: "Webentwicklung", desc: "Websites, Landing Pages und Portale mit Performance und SEO." },
-      { title: "Systeme & ERP", desc: "Verkauf, Lager, Finanzen und Integrationen." },
-      { title: "Anwendungen", desc: "Mobile Apps und PWAs für Ihr Geschäft." },
-      { title: "IT-Support", desc: "Infrastruktur, Wartung und Unternehmenssupport." },
+      {
+        title: "Webentwicklung",
+        desc: "Websites, Landing Pages und Portale mit Performance und SEO.",
+        details: "Wir erstellen Unternehmenswebsites, Landing Pages und Portale nach Maß. Fokus auf professionelles Design, schnelle Ladezeiten und gute Sichtbarkeit bei Google.",
+        points: ["Layout passend zur Marke", "Performance und mobile Nutzung", "Technische SEO-Grundlage", "Formulare, WhatsApp und Integrationen"],
+      },
+      {
+        title: "Systeme & ERP",
+        desc: "Verkauf, Lager, Finanzen und Integrationen.",
+        details: "Wenn Tabellen nicht mehr reichen, bauen wir ein System mit Ihren echten Abläufen: Verkauf, Lager, Finanzen, Stammdaten und geschützter Bereich.",
+        points: ["Verkauf, Lager und Finanzen", "Zentrale Daten mit Zugriffssteuerung", "ERP-, CRM- und Zahlungsanbindung", "Weniger Nacharbeit und weniger Fehler"],
+      },
+      {
+        title: "Anwendungen",
+        desc: "Mobile Apps und PWAs für Ihr Geschäft.",
+        details: "Wir entwickeln mobile Apps und PWAs für Kunden, Teams oder interne Abläufe, verbunden mit Ihrem System inklusive Login und Benachrichtigungen.",
+        points: ["Native App oder PWA, je nach Bedarf", "Angebunden an Ihre Unternehmensdaten", "Login, Benachrichtigungen und Nutzerbereich", "Veröffentlichung und laufende Weiterentwicklung"],
+      },
+      {
+        title: "IT-Support",
+        desc: "Infrastruktur, Wartung und Unternehmenssupport.",
+        details: "Wir kümmern uns um Hardware und den Alltag: langsame Rechner, instabile Netze, Viren, Neuinstallation und Support für Unternehmen.",
+        points: ["Wartung von PCs und Notebooks", "Neuinstallation, Reinigung und Optimierung", "Viren- und Bedrohungsentfernung", "Technischer Support für Unternehmen"],
+      },
     ],
   },
   homeProcess: {

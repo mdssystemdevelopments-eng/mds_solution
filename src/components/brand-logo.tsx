@@ -1,14 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { ASSETS } from "@/modules/shared/constants/assets";
+import { useOptionalSiteContent } from "@/components/locale-provider";
 
 type Props = {
   variant: "nav" | "hero" | "footer";
   className?: string;
   priority?: boolean;
 };
-
-/** Logo oficial — arquivo em /public/logo-mds.png */
-const LOGO_SRC = ASSETS.logos.main;
 
 const dim = {
   nav: { width: 220, height: 64, className: "brand-logo brand-logo--nav" },
@@ -17,11 +17,13 @@ const dim = {
 };
 
 export function BrandLogo({ variant, className = "", priority }: Props) {
+  const content = useOptionalSiteContent();
+  const src = content?.media?.logo || ASSETS.logos.main;
   const d = dim[variant];
   return (
     <Image
-      src={LOGO_SRC}
-      alt="MDS Soluções em Tecnologia"
+      src={src}
+      alt={content?.seo.organizationName || "MDS Soluções em Tecnologia"}
       width={d.width}
       height={d.height}
       className={`${d.className} ${className}`.trim()}

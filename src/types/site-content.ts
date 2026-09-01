@@ -50,7 +50,8 @@ export type SiteUiContent = {
     title: string;
     lead: string;
     learnMore: string;
-    items: { title: string; desc: string; href?: string }[];
+    close: string;
+    items: { title: string; desc: string; details?: string; points?: string[]; href?: string }[];
   };
   homeProcess: {
     eyebrow: string;
@@ -130,6 +131,18 @@ export type SiteContent = {
     email: string;
   };
   nav: NavItem[];
+  media: {
+    logo: string;
+    favicon: string;
+    homeWallpaper: string;
+    backgrounds: {
+      sobre: string;
+      servicos: string;
+      portfolio: string;
+      contato: string;
+      areaCliente: string;
+    };
+  };
   hero: {
     badge: string;
     headlineBefore: string;
@@ -144,6 +157,7 @@ export type SiteContent = {
     cardBullets: string[];
     cardFooterKicker: string;
     cardFooterText: string;
+    stats: { value: string; label: string }[];
   };
   home: {
     sectionKicker: string;
@@ -168,6 +182,19 @@ export type SiteContent = {
     techIntro: string;
     digital: ServiceItem[];
     tech: ServiceItem[];
+    request: {
+      cta: string;
+      title: string;
+      lead: string;
+      nameLabel: string;
+      emailLabel: string;
+      phoneLabel: string;
+      detailsLabel: string;
+      detailsPlaceholder: string;
+      submit: string;
+      cancel: string;
+      validation: string;
+    };
   };
   portfolio: {
     sectionKicker: string;
@@ -219,6 +246,10 @@ export type SiteContent = {
     socialsLabel: string;
     whatsappLabel: string;
     socials: { href: string; label: string }[];
+  };
+  trustBadges: {
+    title: string;
+    items: { title: string; text: string }[];
   };
   ui: SiteUiContent;
 };

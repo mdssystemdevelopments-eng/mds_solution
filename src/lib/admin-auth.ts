@@ -3,16 +3,21 @@ import { cookies } from "next/headers";
 
 export const ADMIN_COOKIE = "mds_admin";
 
-/** Padrão: usuário admin / senha root — sobrescreva com ADMIN_USERNAME e ADMIN_PASSWORD no .env.local */
 export function getAdminCredentials() {
+  const username = process.env.ADMIN_USERNAME?.trim() ?? "";
+  const password = process.env.ADMIN_PASSWORD ?? "";
+  if (process.env.NODE_ENV === "production" && (!username || !password)) {
+    return { username: "", password: "" };
+  }
   return {
-    username: process.env.ADMIN_USERNAME ?? "admin",
-    password: process.env.ADMIN_PASSWORD ?? "root",
+    username: username || "admin",
+    password: password || "root",
   };
 }
 
 export function getExpectedAdminToken(): string | null {
   const { username, password } = getAdminCredentials();
+  if (!username || !password) return null;
   const secret = process.env.ADMIN_SESSION_SECRET || password;
   if (!secret) return null;
   return createHmac("sha256", secret).update(`mds-admin:${username}:${password}`).digest("hex");

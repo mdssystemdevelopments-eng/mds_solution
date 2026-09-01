@@ -142,11 +142,32 @@ export const esPatch: LocalePatch = deepMerge(enPatch as Record<string, unknown>
       title: "Todo lo que tu empresa necesita en tecnología",
       lead: "Del sitio al ERP, con código a medida y soporte cercano.",
       learnMore: "Saber más",
+      close: "Cerrar",
       items: [
-        { title: "Desarrollo Web", desc: "Sitios, landing pages y portales con rendimiento y SEO." },
-        { title: "Sistemas y ERP", desc: "Gestión de ventas, stock, finanzas e integraciones." },
-        { title: "Aplicaciones", desc: "Apps móviles y PWA conectadas a tu negocio." },
-        { title: "Soporte Técnico", desc: "Infraestructura, mantenimiento y soporte empresarial." },
+        {
+          title: "Desarrollo Web",
+          desc: "Sitios, landing pages y portales con rendimiento y SEO.",
+          details: "Creamos sitios institucionales, landing pages y portales a medida. El foco es un visual profesional, carga rápida y buena presencia en Google, en celular y computadora.",
+          points: ["Diseño alineado a tu marca", "Rendimiento y experiencia móvil", "Base técnica pensada para SEO", "Formularios, WhatsApp e integraciones"],
+        },
+        {
+          title: "Sistemas y ERP",
+          desc: "Gestión de ventas, stock, finanzas e integraciones.",
+          details: "Cuando la planilla ya no alcanza, armamos un sistema con los flujos reales de tu operación: ventas, stock, finanzas, registros y área restringida.",
+          points: ["Gestión de ventas, stock y finanzas", "Datos centralizados con acceso controlado", "Integración con ERP, CRM y pagos", "Menos retrabajo y menos error manual"],
+        },
+        {
+          title: "Aplicaciones",
+          desc: "Apps móviles y PWA conectadas a tu negocio.",
+          details: "Desarrollamos apps móviles y PWA para clientes, equipo u operación interna, conectadas a tu sistema con login, notificaciones y flujos del día a día.",
+          points: ["App nativa o PWA, según el caso", "Conectada a los datos de la empresa", "Login, notificaciones y área de usuario", "Publicación y evolución continua"],
+        },
+        {
+          title: "Soporte Técnico",
+          desc: "Infraestructura, mantenimiento y soporte empresarial.",
+          details: "Cuidamos el hardware y la operación diaria: computadoras lentas, red inestable, virus, formateo y soporte para empresas que necesitan a alguien estable.",
+          points: ["Mantenimiento de computadoras y notebooks", "Formateo, limpieza y optimización", "Eliminación de virus y amenazas", "Soporte técnico para empresas"],
+        },
       ],
     },
     homeProcess: {

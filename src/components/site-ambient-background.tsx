@@ -1,14 +1,18 @@
-import { ASSETS } from "@/modules/shared/constants/assets";
+"use client";
 
-const HOME_WALLPAPER = ASSETS.backgrounds.homeWallpaper;
+import { ASSETS } from "@/modules/shared/constants/assets";
+import { useOptionalSiteContent } from "@/components/locale-provider";
 
 export function SiteAmbientBackground() {
+  const content = useOptionalSiteContent();
+  const src = content?.media?.homeWallpaper || ASSETS.backgrounds.homeWallpaper;
+
   return (
     <div className="video-bg" aria-hidden suppressHydrationWarning>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className="video-bg__image"
-        src={HOME_WALLPAPER}
+        src={src}
         alt=""
         fetchPriority="high"
         decoding="async"

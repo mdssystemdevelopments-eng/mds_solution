@@ -22,26 +22,55 @@ export const defaultUiContent: SiteUiContent = {
     title: "Tudo que sua empresa precisa em tecnologia",
     lead: "Do site ao ERP, com código sob medida e suporte próximo.",
     learnMore: "Saiba mais",
+    close: "Fechar",
     items: [
       {
         title: "Desenvolvimento Web",
         desc: "Sites, landing pages e portais com performance e SEO.",
-        href: "/servicos",
+        details:
+          "Criamos sites institucionais, landing pages e portais sob medida para o seu negócio. O foco é um visual profissional, carregamento rápido e boa posição no Google, no celular e no computador.",
+        points: [
+          "Layout alinhado à identidade da empresa",
+          "Performance e experiência no celular",
+          "Base técnica pensada para SEO",
+          "Formulários, WhatsApp e integrações",
+        ],
       },
       {
         title: "Sistemas & ERP",
         desc: "Gestão de vendas, estoque, financeiro e integrações.",
-        href: "/servicos",
+        details:
+          "Quando planilha e papel não dão mais conta, montamos um sistema com os fluxos reais da sua operação: vendas, estoque, financeiro, cadastros e área restrita, do jeito que você trabalha.",
+        points: [
+          "Gestão de vendas, estoque e financeiro",
+          "Dados centralizados e com acesso controlado",
+          "Integração com ERP, CRM e pagamentos",
+          "Menos retrabalho e menos erro manual",
+        ],
       },
       {
         title: "Aplicativos",
         desc: "Apps mobile e PWAs conectados ao seu negócio.",
-        href: "/servicos",
+        details:
+          "Desenvolvemos aplicativos mobile e PWAs para clientes, equipe ou operação interna. O app conversa com o seu sistema, com login, notificações e fluxos pensados para o dia a dia.",
+        points: [
+          "App nativo ou PWA, conforme o caso",
+          "Conectado ao sistema e aos dados da empresa",
+          "Login, notificações e área do usuário",
+          "Publicação e evolução contínua",
+        ],
       },
       {
         title: "Assistência Técnica",
         desc: "Infraestrutura, manutenção e suporte empresarial.",
-        href: "/servicos",
+        details:
+          "Cuidamos da parte física e da operação do dia a dia: computadores lentos, rede instável, vírus, formatação e suporte para empresas que precisam de alguém estável para não parar o trabalho.",
+        points: [
+          "Manutenção de computadores e notebooks",
+          "Formatação, limpeza e otimização",
+          "Remoção de vírus e ameaças",
+          "Suporte técnico para empresas",
+        ],
       },
     ],
   },

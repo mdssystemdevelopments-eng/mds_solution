@@ -2,7 +2,7 @@ import { whatsappHref } from "@/lib/whatsapp";
 import type { SiteContent } from "@/types/site-content";
 
 export function Footer({ content }: { content: SiteContent }) {
-  const { footer: f, contact: c } = content;
+  const { footer: f, contact: c, nav } = content;
 
   return (
     <footer className="footer">
@@ -12,7 +12,16 @@ export function Footer({ content }: { content: SiteContent }) {
             <div className="footer__col footer__col--brand">
               <p className="footer__brand">{f.brand}</p>
               <p className="footer__tagline">{f.tagline}</p>
-              <p className="footer__code">{"// build / deploy / support"}</p>
+            </div>
+            <div className="footer__col">
+              <p className="footer__heading">{f.quickLinksLabel}</p>
+              <ul className="footer__links">
+                {nav.map((item) => (
+                  <li key={item.href}>
+                    <a href={item.href}>{item.label}</a>
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="footer__col">
               <p className="footer__heading">{f.contactLabel}</p>
@@ -31,6 +40,20 @@ export function Footer({ content }: { content: SiteContent }) {
                 </li>
               </ul>
             </div>
+            {f.socials.length > 0 ? (
+              <div className="footer__col">
+                <p className="footer__heading">{f.socialsLabel}</p>
+                <ul className="footer__links">
+                  {f.socials.map((social) => (
+                    <li key={social.href}>
+                      <a href={social.href} target="_blank" rel="noopener noreferrer">
+                        {social.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
           <p className="footer__copy">
             © {f.copyrightYear} {f.copyrightName}

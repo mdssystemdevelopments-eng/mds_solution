@@ -8,12 +8,12 @@ import { ADMIN_LOGIN_PATH } from "@/lib/admin-routes";
 import { ADMIN_PAGES } from "@/lib/admin-pages";
 
 const NAV = [
-  { href: "/admin", label: "Início", icon: "⌂" },
-  { href: "/admin/conteudo", label: "Editor do site", icon: "✎" },
-  { href: "/admin/posts", label: "Posts", icon: "📄" },
-  { href: "/admin/produtos", label: "Produtos", icon: "🛒" },
-  { href: "/admin/midias", label: "Mídias", icon: "🖼" },
-  { href: "/admin/configuracoes", label: "Configurações", icon: "⚙" },
+  { href: "/admin", label: "Início" },
+  { href: "/admin/conteudo", label: "Editor do site" },
+  { href: "/admin/midias", label: "Mídias" },
+  { href: "/admin/posts", label: "Posts" },
+  { href: "/admin/produtos", label: "Produtos" },
+  { href: "/admin/configuracoes", label: "Configurações" },
 ] as const;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -47,7 +47,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     active ? "bg-neon-blue/10 text-neon-blue" : "text-zinc-300 hover:bg-zinc-900/40"
                   }`}
                 >
-                  <span aria-hidden>{item.icon}</span>
                   {item.label}
                 </Link>
               );
@@ -71,7 +70,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           )}
           <div className="mt-6 space-y-2 border-t border-zinc-800 pt-4">
             <Link href="/" target="_blank" className="block rounded-xl border border-zinc-800 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-900/40">
-              Ver site ↗
+              Ver site
             </Link>
             <button type="button" onClick={logout} className="w-full rounded-xl border border-red-500/40 px-3 py-2 text-left text-sm text-red-200 hover:bg-red-950/30">
               Sair

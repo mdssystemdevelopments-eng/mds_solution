@@ -371,11 +371,32 @@ export const enPatch: LocalePatch = {
       title: "Everything your business needs in technology",
       lead: "From website to ERP, with custom code and close support.",
       learnMore: "Learn more",
+      close: "Close",
       items: [
-        { title: "Web Development", desc: "Websites, landing pages and portals with performance and SEO." },
-        { title: "Systems & ERP", desc: "Sales, inventory, finance management and integrations." },
-        { title: "Applications", desc: "Mobile apps and PWAs connected to your business." },
-        { title: "IT Support", desc: "Infrastructure, maintenance and business support." },
+        {
+          title: "Web Development",
+          desc: "Websites, landing pages and portals with performance and SEO.",
+          details: "We build institutional websites, landing pages and custom portals. The focus is a professional look, fast loading and a strong presence on Google — on mobile and desktop.",
+          points: ["Layout aligned with your brand", "Mobile performance and experience", "Technical SEO foundation", "Forms, WhatsApp and integrations"],
+        },
+        {
+          title: "Systems & ERP",
+          desc: "Sales, inventory, finance management and integrations.",
+          details: "When spreadsheets are no longer enough, we build a system around your real operation: sales, inventory, finance, records and a private area — the way you work.",
+          points: ["Sales, inventory and finance management", "Centralized data with controlled access", "ERP, CRM and payment integrations", "Less rework and fewer manual errors"],
+        },
+        {
+          title: "Applications",
+          desc: "Mobile apps and PWAs connected to your business.",
+          details: "We develop mobile apps and PWAs for customers, teams or internal operations, connected to your system with login, notifications and day-to-day flows.",
+          points: ["Native app or PWA, as needed", "Connected to your company data", "Login, notifications and user area", "Publishing and ongoing evolution"],
+        },
+        {
+          title: "IT Support",
+          desc: "Infrastructure, maintenance and business support.",
+          details: "We take care of hardware and daily operations: slow computers, unstable networks, viruses, formatting and support for companies that need someone reliable.",
+          points: ["Computer and laptop maintenance", "Formatting, cleaning and optimization", "Virus and threat removal", "Technical support for businesses"],
+        },
       ],
     },
     homeProcess: {

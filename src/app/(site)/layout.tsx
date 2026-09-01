@@ -40,6 +40,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description: c.seo.ogDescription,
     },
     robots: { index: true, follow: true },
+    icons: {
+      icon: [{ url: c.media?.favicon || "/favicon.svg" }],
+      shortcut: c.media?.favicon || "/favicon.svg",
+      apple: c.media?.logo || "/logo-mds.png",
+    },
   };
 }
 

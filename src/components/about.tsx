@@ -10,7 +10,7 @@ export function About({ content }: { content: SiteContent }) {
           <p className="eyebrow">{a.sectionKicker}</p>
           <h1 className="h2 page-head__title">{a.title}</h1>
         </div>
-        <div className="panel prose-block page-block" style={{ maxWidth: "42rem" }}>
+        <div className="panel prose-block page-block">
           {a.paragraphs.map((p) => (
             <p key={p.slice(0, 48)}>{p}</p>
           ))}
