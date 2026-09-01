@@ -27,13 +27,9 @@ export function ProjectCard({
         <h3 className="project-card__title">{item.name}</h3>
         <p className="project-card__client">{item.client}</p>
         <p className="project-card__desc">{item.description}</p>
-        <div className="project-card__tags">
-          {item.stack.slice(0, 4).map((t) => (
-            <span key={t} className="project-card__tag">
-              {t}
-            </span>
-          ))}
-        </div>
+        {item.stack.length > 0 ? (
+          <p className="project-card__stack">Stack: {item.stack.join(" · ")}</p>
+        ) : null}
       </div>
     </article>
   );

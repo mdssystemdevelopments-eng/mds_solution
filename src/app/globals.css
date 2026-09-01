@@ -1187,19 +1187,12 @@ body:has(.page-bg) {
   color: #fff;
 }
 
-.project-card__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-top: 0.65rem;
-}
-
-.project-card__tag {
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  border: 1px solid var(--panel-border);
-  font-size: 0.625rem;
-  color: var(--accent);
+.project-card__stack {
+  margin: 0.65rem 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* —— Process —— */
