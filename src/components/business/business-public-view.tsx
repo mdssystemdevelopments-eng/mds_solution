@@ -195,17 +195,15 @@ function BlockView({
     const items = arr(c, "items").filter((item) => str(item, "value") || str(item, "label"));
     if (!items.length) return <EmptyNote preview={preview} text="Adicione indicadores neste bloco." />;
     return (
-      <section className="bp-band">
-        <div className="bp-wrap bp-section bp-section--stats">
-          <SectionHead title={str(c, "title") || undefined} />
-          <div className="bp-stats">
-            {items.map((item, i) => (
-              <div key={i} className="bp-stat">
-                <strong>{str(item, "value")}</strong>
-                <span>{str(item, "label")}</span>
-              </div>
-            ))}
-          </div>
+      <section className="bp-wrap bp-section">
+        {str(c, "title") ? <h2 className="bp-block-title">{str(c, "title")}</h2> : null}
+        <div className="bp-grid3">
+          {items.map((item, i) => (
+            <article key={i} className="bp-tile">
+              <p className="bp-tile__top">{str(item, "value")}</p>
+              <h3 className="bp-tile__title">{str(item, "label")}</h3>
+            </article>
+          ))}
         </div>
       </section>
     );
@@ -236,15 +234,13 @@ function BlockView({
     if (!items.length) return <EmptyNote preview={preview} text="Adicione etapas neste bloco." />;
     return (
       <section className="bp-wrap bp-section">
-        <SectionHead title={str(c, "title") || undefined} />
-        <ol className="bp-time">
+        {str(c, "title") ? <h2 className="bp-block-title">{str(c, "title")}</h2> : null}
+        <ol className="bp-grid3">
           {items.map((item, i) => (
-            <li key={i}>
-              <span>{String(i + 1).padStart(2, "0")}</span>
-              <div>
-                {str(item, "title") ? <h3>{str(item, "title")}</h3> : null}
-                {str(item, "text") ? <p>{str(item, "text")}</p> : null}
-              </div>
+            <li key={i} className="bp-tile">
+              <p className="bp-tile__top">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="bp-tile__title">{str(item, "title")}</h3>
+              {str(item, "text") ? <p className="bp-tile__text">{str(item, "text")}</p> : null}
             </li>
           ))}
         </ol>
