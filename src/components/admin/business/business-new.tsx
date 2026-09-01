@@ -6,17 +6,22 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
 import { AdminPage } from "@/components/admin/admin-page";
+import { BusinessNav } from "@/components/admin/business/business-nav";
 import { ImageField } from "@/components/admin/cms/image-field";
 import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
 import {
   BUSINESS_TEMPLATES,
   BUSINESS_TYPES,
+  TEMPLATE_HINTS,
   TEMPLATE_LABELS,
+  TYPE_HINTS,
   TYPE_LABELS,
   type BusinessCompany,
   type BusinessTemplate,
   type BusinessType,
 } from "@/lib/business/types";
+
+const STEPS = ["Dados", "Tipo", "Modelo"] as const;
 
 export function BusinessNewProject() {
   const router = useRouter();
@@ -63,67 +68,103 @@ export function BusinessNewProject() {
   return (
     <AdminPage
       title="Novo projeto"
-      description={`Etapa ${step} de 3`}
-      actions={<Link href="/admin/business" className="cms-btn cms-btn--ghost">Voltar</Link>}
+      description="Tres etapas. Depois voce edita os blocos no editor."
+      actions={
+        <Link href="/admin/business/projetos" className="cms-btn cms-btn--ghost">
+          Cancelar
+        </Link>
+      }
     >
+      <BusinessNav />
+      <ol className="biz-steps">
+        {STEPS.map((label, i) => (
+          <li key={label} className={step === i + 1 ? "is-on" : step > i + 1 ? "is-done" : ""}>
+            <span>{i + 1}</span>
+            {label}
+          </li>
+        ))}
+      </ol>
+
       {step === 1 ? (
-        <div className="biz-form">
-          <Field label="Nome do projeto"><Input value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} /></Field>
+        <div className="biz-form biz-form--wide">
+          <Field label="Nome do projeto">
+            <Input value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} />
+          </Field>
           <Field label="Empresa">
             <select className="cms-input" value={form.companyId} onChange={(e) => setForm((p) => ({ ...p, companyId: e.target.value }))}>
               <option value="">Sem empresa</option>
               {companies.map((item) => (
-                <option key={item.id} value={item.id}>{item.name}</option>
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
               ))}
             </select>
           </Field>
-          <Field label="Descricao"><Textarea value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} rows={3} /></Field>
+          <Field label="Descricao">
+            <Textarea value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} rows={3} />
+          </Field>
           <Field label="Slug" hint="Deixe em branco para gerar automaticamente.">
             <Input value={form.slug} onChange={(v) => setForm((p) => ({ ...p, slug: v }))} placeholder="empresa-xyz" />
           </Field>
           <ImageField label="Imagem de capa" value={form.cover} onChange={(v) => setForm((p) => ({ ...p, cover: v }))} />
-          <button type="button" className="cms-btn cms-btn--primary" disabled={!form.title.trim()} onClick={() => setStep(2)}>
-            Continuar
-          </button>
+          <div className="biz-actions">
+            <button type="button" className="cms-btn cms-btn--primary" disabled={!form.title.trim()} onClick={() => setStep(2)}>
+              Continuar
+            </button>
+          </div>
         </div>
       ) : null}
 
       {step === 2 ? (
-        <div className="biz-choices">
-          {BUSINESS_TYPES.map((type) => (
-            <button
-              key={type}
-              type="button"
-              className={`biz-choice${form.type === type ? " is-on" : ""}`}
-              onClick={() => setForm((p) => ({ ...p, type }))}
-            >
-              {TYPE_LABELS[type]}
-            </button>
-          ))}
+        <div>
+          <div className="biz-choices">
+            {BUSINESS_TYPES.map((type) => (
+              <button
+                key={type}
+                type="button"
+                className={`biz-choice${form.type === type ? " is-on" : ""}`}
+                onClick={() => setForm((p) => ({ ...p, type }))}
+              >
+                <strong>{TYPE_LABELS[type]}</strong>
+                <span>{TYPE_HINTS[type]}</span>
+              </button>
+            ))}
+          </div>
           <div className="biz-actions">
-            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(1)}>Voltar</button>
-            <button type="button" className="cms-btn cms-btn--primary" onClick={() => setStep(3)}>Continuar</button>
+            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(1)}>
+              Voltar
+            </button>
+            <button type="button" className="cms-btn cms-btn--primary" onClick={() => setStep(3)}>
+              Continuar
+            </button>
           </div>
         </div>
       ) : null}
 
       {step === 3 ? (
-        <div className="biz-choices">
-          {BUSINESS_TEMPLATES.map((template) => (
-            <button
-              key={template}
-              type="button"
-              className={`biz-choice${form.template === template ? " is-on" : ""}`}
-              onClick={() => setForm((p) => ({ ...p, template }))}
-            >
-              {TEMPLATE_LABELS[template]}
-            </button>
-          ))}
-          <Field label="Senha (opcional, deixa o projeto privado)">
-            <Input type="password" value={form.password} onChange={(v) => setForm((p) => ({ ...p, password: v }))} />
-          </Field>
+        <div>
+          <div className="biz-choices">
+            {BUSINESS_TEMPLATES.map((template) => (
+              <button
+                key={template}
+                type="button"
+                className={`biz-choice${form.template === template ? " is-on" : ""}`}
+                onClick={() => setForm((p) => ({ ...p, template }))}
+              >
+                <strong>{TEMPLATE_LABELS[template]}</strong>
+                <span>{TEMPLATE_HINTS[template]}</span>
+              </button>
+            ))}
+          </div>
+          <div className="biz-form biz-form--wide">
+            <Field label="Senha (opcional)" hint="Se preencher, o projeto fica privado.">
+              <Input type="password" value={form.password} onChange={(v) => setForm((p) => ({ ...p, password: v }))} />
+            </Field>
+          </div>
           <div className="biz-actions">
-            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(2)}>Voltar</button>
+            <button type="button" className="cms-btn cms-btn--ghost" onClick={() => setStep(2)}>
+              Voltar
+            </button>
             <button type="button" className="cms-btn cms-btn--primary" disabled={saving} onClick={() => void create()}>
               {saving ? "Criando..." : "Criar projeto"}
             </button>

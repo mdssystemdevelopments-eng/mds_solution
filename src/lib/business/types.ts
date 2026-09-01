@@ -154,6 +154,17 @@ export const TYPE_LABELS: Record<BusinessType, string> = {
   personalizado: "Personalizado",
 };
 
+export const TYPE_HINTS: Record<BusinessType, string> = {
+  "apresentacao-comercial": "Reuniao, pitch e proposta de servico.",
+  "apresentacao-institucional": "Quem e a empresa e o que ela entrega.",
+  portfolio: "Cases e trabalhos para mostrar resultado.",
+  "proposta-comercial": "Escopo, prazo e investimento.",
+  catalogo: "Lista de produtos ou servicos.",
+  "projeto-cliente": "Pagina exclusiva de um cliente.",
+  "landing-page": "Pagina unica para converter contato.",
+  personalizado: "Comece do zero e monte os blocos.",
+};
+
 export const TEMPLATE_LABELS: Record<BusinessTemplate, string> = {
   moderno: "Moderno",
   corporativo: "Corporativo",
@@ -162,6 +173,22 @@ export const TEMPLATE_LABELS: Record<BusinessTemplate, string> = {
   imobiliario: "Imobiliario",
   portfolio: "Portfolio",
 };
+
+export const TEMPLATE_HINTS: Record<BusinessTemplate, string> = {
+  moderno: "Escuro, direto, com numeros e chamada.",
+  corporativo: "Mais formal, com etapas do trabalho.",
+  minimalista: "Claro, curto, so o essencial.",
+  premium: "Foco em investimento e proposta.",
+  imobiliario: "Espaco para galeria de fotos.",
+  portfolio: "Cards para cases e projetos.",
+};
+
+export const BLOCK_GROUPS: { id: string; label: string; types: BlockType[] }[] = [
+  { id: "conteudo", label: "Conteudo", types: ["hero", "text", "cards", "stats", "testimonials", "timeline", "table", "faq", "divider"] },
+  { id: "midia", label: "Midia", types: ["image", "gallery", "video", "pdf"] },
+  { id: "acao", label: "Conversao", types: ["pricing", "button", "cta", "contact", "form"] },
+  { id: "avancado", label: "Avancado", types: ["html"] },
+];
 
 export const STATUS_LABELS: Record<BusinessStatus, string> = {
   draft: "Rascunho",

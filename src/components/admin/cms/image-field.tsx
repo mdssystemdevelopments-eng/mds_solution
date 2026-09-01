@@ -153,3 +153,67 @@ export function GalleryField({
     </div>
   );
 }
+
+export function FileField({
+  label,
+  hint,
+  value,
+  onChange,
+  accept = "application/pdf",
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (url: string) => void;
+  accept?: string;
+}) {
+  const [busy, setBusy] = useState(false);
+
+  async function upload(file: File) {
+    setBusy(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await apiFetch("/api/admin/upload", { method: "POST", body: form });
+      const json = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !json.url) {
+        toast.error(json.error || "Falha no upload");
+        return;
+      }
+      onChange(json.url);
+      toast.success("Arquivo enviado.");
+    } catch {
+      toast.error("Falha no upload");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Field label={label} hint={hint ?? "PDF ate 3,5 MB."}>
+      <div className="cms-image-field">
+        {value ? (
+          <a href={value} target="_blank" rel="noreferrer" className="cms-image-field__file">
+            {value}
+          </a>
+        ) : (
+          <div className="cms-image-field__empty">Sem arquivo</div>
+        )}
+        <Input value={value} onChange={onChange} placeholder="/uploads/arquivo.pdf" />
+        <label className="cms-image-field__pick">
+          <input
+            type="file"
+            accept={accept}
+            disabled={busy}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) void upload(file);
+            }}
+          />
+          {busy ? "Enviando…" : "Enviar arquivo"}
+        </label>
+      </div>
+    </Field>
+  );
+}

@@ -16,10 +16,11 @@ const NAV = [
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const isProjectEditor = /^\/admin\/business\/projetos\/(?!novo$)[^/]+$/.test(pathname);
   const isEditor =
     pathname === "/admin" ||
     pathname.startsWith("/admin/conteudo") ||
-    pathname.startsWith("/admin/business/projetos/");
+    isProjectEditor;
 
   async function logout() {
     const res = await apiFetch("/api/admin/logout", { method: "POST" });
@@ -81,7 +82,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-4 py-4 md:px-6 md:py-6">{children}</main>
+        <main className={`min-w-0 flex-1 ${isProjectEditor ? "px-2 py-2 md:px-3 md:py-3" : "px-4 py-4 md:px-6 md:py-6"}`}>
+          {children}
+        </main>
       </div>
     </div>
   );

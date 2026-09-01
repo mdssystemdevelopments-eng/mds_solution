@@ -4,7 +4,8 @@ import type { BusinessBlock, BusinessCompany, BusinessDesign, BusinessProject } 
 import { arr, str } from "@/lib/business/blocks";
 import { useState } from "react";
 
-function track(projectId: string, kind: "click" | "download", label: string) {
+function track(projectId: string, kind: "click" | "download", label: string, preview?: boolean) {
+  if (preview) return;
   void fetch("/api/business/track", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -12,7 +13,7 @@ function track(projectId: string, kind: "click" | "download", label: string) {
   });
 }
 
-function BlockView({ block, projectId }: { block: BusinessBlock; projectId: string }) {
+function BlockView({ block, projectId, preview }: { block: BusinessBlock; projectId: string; preview?: boolean }) {
   const c = block.content;
   if (block.hidden) return null;
 
@@ -26,7 +27,7 @@ function BlockView({ block, projectId }: { block: BusinessBlock; projectId: stri
           <h1>{str(c, "title")}</h1>
           {str(c, "text") ? <p>{str(c, "text")}</p> : null}
           {str(c, "buttonLabel") ? (
-            <a href={str(c, "buttonHref") || "#"} className="bp-btn" onClick={() => track(projectId, "click", str(c, "buttonLabel"))}>
+            <a href={str(c, "buttonHref") || "#"} className="bp-btn" onClick={() => track(projectId, "click", str(c, "buttonLabel"), preview)}>
               {str(c, "buttonLabel")}
             </a>
           ) : null}
@@ -84,8 +85,8 @@ function BlockView({ block, projectId }: { block: BusinessBlock; projectId: stri
         <h2>{str(c, "title", "Documento")}</h2>
         {str(c, "src") ? (
           <div className="bp-actions">
-            <a className="bp-btn" href={str(c, "src")} target="_blank" rel="noreferrer" onClick={() => track(projectId, "click", "abrir-pdf")}>Abrir</a>
-            <a className="bp-btn bp-btn--ghost" href={str(c, "src")} download onClick={() => track(projectId, "download", str(c, "title"))}>{str(c, "label", "Baixar PDF")}</a>
+            <a className="bp-btn" href={str(c, "src")} target="_blank" rel="noreferrer" onClick={() => track(projectId, "click", "abrir-pdf", preview)}>Abrir</a>
+            <a className="bp-btn bp-btn--ghost" href={str(c, "src")} download onClick={() => track(projectId, "download", str(c, "title"), preview)}>{str(c, "label", "Baixar PDF")}</a>
           </div>
         ) : null}
       </section>
@@ -194,7 +195,7 @@ function BlockView({ block, projectId }: { block: BusinessBlock; projectId: stri
   if (block.type === "button") {
     return (
       <section className="bp-wrap bp-section">
-        <a className="bp-btn" href={str(c, "href") || "#"} onClick={() => track(projectId, "click", str(c, "label"))}>{str(c, "label")}</a>
+        <a className="bp-btn" href={str(c, "href") || "#"} onClick={() => track(projectId, "click", str(c, "label"), preview)}>{str(c, "label")}</a>
       </section>
     );
   }
@@ -205,7 +206,7 @@ function BlockView({ block, projectId }: { block: BusinessBlock; projectId: stri
         <div className="bp-wrap">
           <h2>{str(c, "title")}</h2>
           <p>{str(c, "text")}</p>
-          <a className="bp-btn" href={str(c, "buttonHref") || "#"} onClick={() => track(projectId, "click", str(c, "buttonLabel"))}>{str(c, "buttonLabel")}</a>
+          <a className="bp-btn" href={str(c, "buttonHref") || "#"} onClick={() => track(projectId, "click", str(c, "buttonLabel"), preview)}>{str(c, "buttonLabel")}</a>
         </div>
       </section>
     );
@@ -291,9 +292,11 @@ function toEmbed(url: string): string {
 export function BusinessPublicView({
   project,
   company,
+  preview = false,
 }: {
   project: BusinessProject;
   company?: BusinessCompany | null;
+  preview?: boolean;
 }) {
   const d: BusinessDesign = project.design;
   return (
@@ -317,7 +320,7 @@ export function BusinessPublicView({
         </header>
       ) : null}
       {project.blocks.map((block) => (
-        <BlockView key={block.id} block={block} projectId={project.id} />
+        <BlockView key={block.id} block={block} projectId={project.id} preview={preview} />
       ))}
       {d.showFooter ? (
         <footer className="bp-foot">

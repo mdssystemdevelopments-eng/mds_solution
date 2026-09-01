@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api-fetch";
 import { AdminPage } from "@/components/admin/admin-page";
+import { BusinessNav } from "@/components/admin/business/business-nav";
 import { STATUS_LABELS, VISIBILITY_LABELS } from "@/lib/business/types";
 
 type Dash = {
@@ -49,16 +50,21 @@ export function BusinessDashboard() {
   }, []);
 
   if (!data) {
-    return <AdminPage title="Business" description="Carregando o painel."><p className="biz-muted">Aguarde.</p></AdminPage>;
+    return (
+      <AdminPage title="Business" description="Carregando o painel.">
+        <BusinessNav />
+        <p className="biz-muted">Aguarde.</p>
+      </AdminPage>
+    );
   }
 
   const cards = [
-    ["Total de projetos", data.totals.projects],
+    ["Projetos", data.totals.projects],
     ["Publicados", data.totals.published],
     ["Rascunhos", data.totals.drafts],
-    ["Privados", data.totals.private],
     ["Empresas", data.totals.companies],
-    ["Visualizacoes", data.totals.views],
+    ["Views", data.totals.views],
+    ["7 dias", data.totals.views7d],
   ] as const;
 
   return (
@@ -66,16 +72,12 @@ export function BusinessDashboard() {
       title="Business"
       description="Apresentacoes, propostas e paginas exclusivas para clientes."
       actions={
-        <>
-          <Link href="/admin/business/empresas" className="cms-btn cms-btn--ghost">
-            Empresas
-          </Link>
-          <Link href="/admin/business/projetos/novo" className="cms-btn cms-btn--primary">
-            Novo projeto
-          </Link>
-        </>
+        <Link href="/admin/business/projetos/novo" className="cms-btn cms-btn--primary">
+          Novo projeto
+        </Link>
       }
     >
+      <BusinessNav />
       <div className="biz-stats">
         {cards.map(([label, value]) => (
           <div key={label} className="biz-stat">
@@ -87,7 +89,12 @@ export function BusinessDashboard() {
 
       <div className="biz-split">
         <section>
-          <h2 className="biz-h2">Projetos recentes</h2>
+          <div className="biz-section-head">
+            <h2 className="biz-h2">Projetos recentes</h2>
+            <Link href="/admin/business/projetos" className="biz-link">
+              Ver todos
+            </Link>
+          </div>
           {data.recent.length === 0 ? (
             <div className="biz-empty">
               <p>Voce ainda nao possui projetos Business.</p>
@@ -99,9 +106,7 @@ export function BusinessDashboard() {
             <ul className="biz-list">
               {data.recent.map((item) => (
                 <li key={item.id} className="biz-row">
-                  <div className="biz-row__cover">
-                    {item.cover ? <img src={item.cover} alt="" /> : <span />}
-                  </div>
+                  <div className="biz-row__cover">{item.cover ? <img src={item.cover} alt="" /> : <span />}</div>
                   <div className="biz-row__body">
                     <strong>{item.title}</strong>
                     <p>
@@ -131,7 +136,7 @@ export function BusinessDashboard() {
               ))}
             </ul>
           )}
-          <p className="biz-muted">7 dias: {data.totals.views7d} · 30 dias: {data.totals.views30d}</p>
+          <p className="biz-muted">30 dias: {data.totals.views30d} visualizacoes</p>
         </section>
       </div>
     </AdminPage>

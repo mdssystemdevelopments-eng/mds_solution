@@ -2741,6 +2741,13 @@ body:has(.site-overlay) .wa-float {
   color: rgba(255, 255, 255, 0.45);
 }
 
+.cms-image-field__file {
+  display: block;
+  font-size: 0.75rem;
+  color: #00d4ff;
+  word-break: break-all;
+}
+
 .cms-image-field__pick {
   display: inline-flex;
   align-items: center;
