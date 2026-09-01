@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import "../styles/page-loader.css";
+@import "../styles/business.css";
 
 :root {
   --accent: #00d4ff;

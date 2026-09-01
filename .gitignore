@@ -53,3 +53,6 @@ yarn-error.log*
 # uploads do CMS (permanecem no servidor)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# dados locais do Business (Neon em producao)
+/data/business-store.json

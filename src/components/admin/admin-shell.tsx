@@ -9,13 +9,17 @@ import { ADMIN_PAGES } from "@/lib/admin-pages";
 
 const NAV = [
   { href: "/admin/conteudo", label: "Editor do site" },
-  { href: "/admin/midias", label: "Mídias" },
+  { href: "/admin/business", label: "Business" },
+  { href: "/admin/midias", label: "Midias" },
 ] as const;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isEditor = pathname === "/admin" || pathname.startsWith("/admin/conteudo");
+  const isEditor =
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/conteudo") ||
+    pathname.startsWith("/admin/business/projetos/");
 
   async function logout() {
     const res = await apiFetch("/api/admin/logout", { method: "POST" });
@@ -37,7 +41,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               const active =
                 item.href === "/admin/conteudo"
                   ? pathname === "/admin" || pathname.startsWith("/admin/conteudo")
-                  : pathname === item.href || pathname.startsWith(item.href);
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}

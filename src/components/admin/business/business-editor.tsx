@@ -1,0 +1,431 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { apiFetch } from "@/lib/api-fetch";
+import { ImageField, GalleryField } from "@/components/admin/cms/image-field";
+import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
+import { BusinessPublicView } from "@/components/business/business-public-view";
+import { createBlock } from "@/lib/business/blocks";
+import {
+  BLOCK_LABELS,
+  BLOCK_TYPES,
+  STATUS_LABELS,
+  VISIBILITY_LABELS,
+  type BlockType,
+  type BusinessBlock,
+  type BusinessCompany,
+  type BusinessProject,
+} from "@/lib/business/types";
+
+export function BusinessEditor({ id }: { id: string }) {
+  const router = useRouter();
+  const [project, setProject] = useState<BusinessProject | null>(null);
+  const [companies, setCompanies] = useState<BusinessCompany[]>([]);
+  const [selected, setSelected] = useState<string>("");
+  const [tab, setTab] = useState<"blocks" | "design" | "seo">("blocks");
+  const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [status, setStatus] = useState("Carregando");
+  const [password, setPassword] = useState("");
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const projectRef = useRef<BusinessProject | null>(null);
+
+  const load = useCallback(async () => {
+    const [pRes, cRes] = await Promise.all([
+      apiFetch(`/api/admin/business/projects/${id}`),
+      apiFetch("/api/admin/business/companies"),
+    ]);
+    const pJson = await pRes.json();
+    const cJson = await cRes.json();
+    if (!pRes.ok) {
+      toast.error(pJson.error || "Projeto nao encontrado.");
+      router.push("/admin/business");
+      return;
+    }
+    setProject(pJson.project);
+    projectRef.current = pJson.project;
+    setCompanies(cJson.companies ?? []);
+    setSelected(pJson.project.blocks[0]?.id ?? "");
+    setStatus("Salvo");
+  }, [id, router]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const persist = useCallback(async (next: BusinessProject, extra?: Record<string, unknown>) => {
+    setStatus("Salvando...");
+    const res = await apiFetch(`/api/admin/business/projects/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...next, ...extra }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      setStatus("Erro ao salvar");
+      toast.error(json.error || "Erro ao salvar");
+      return;
+    }
+    setProject(json.project);
+    projectRef.current = json.project;
+    setStatus("Salvo");
+  }, [id]);
+
+  function patch(updater: (prev: BusinessProject) => BusinessProject) {
+    setProject((prev) => {
+      if (!prev) return prev;
+      const next = updater(prev);
+      projectRef.current = next;
+      setStatus("Alteracoes nao salvas");
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current = setTimeout(() => {
+        void persist(next, password ? { password } : {});
+      }, 900);
+      return next;
+    });
+  }
+
+  const selectedBlock = project?.blocks.find((b) => b.id === selected) ?? null;
+  const company = useMemo(
+    () => companies.find((item) => item.id === project?.companyId) ?? null,
+    [companies, project?.companyId],
+  );
+
+  async function publish(action: "publish" | "unpublish") {
+    if (!window.confirm(action === "publish" ? "Publicar este projeto?" : "Despublicar este projeto?")) return;
+    const res = await apiFetch(`/api/admin/business/projects/${id}/publish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    });
+    const json = await res.json();
+    if (!res.ok) return toast.error(json.error || "Falha");
+    setProject(json.project);
+    toast.success(action === "publish" ? "Publicado." : "Voltou para rascunho.");
+  }
+
+  async function duplicate() {
+    const res = await apiFetch(`/api/admin/business/projects/${id}/duplicate`, { method: "POST" });
+    const json = await res.json();
+    if (!res.ok) return toast.error(json.error || "Falha ao duplicar");
+    toast.success("Copia criada.");
+    router.push(`/admin/business/projetos/${json.project.id}`);
+  }
+
+  async function remove() {
+    if (!window.confirm("Excluir este projeto de forma permanente?")) return;
+    const res = await apiFetch(`/api/admin/business/projects/${id}`, { method: "DELETE" });
+    if (!res.ok) return toast.error("Nao foi possivel excluir.");
+    router.push("/admin/business");
+  }
+
+  function copyLink() {
+    if (!project) return;
+    const url = `${window.location.origin}/business/${project.slug}`;
+    void navigator.clipboard.writeText(url);
+    toast.success(project.visibility === "private" ? "Link copiado. O visitante precisara da senha." : "Link copiado.");
+  }
+
+  if (!project) return <p className="biz-muted">Carregando editor...</p>;
+
+  return (
+    <div className="biz-editor">
+      <header className="biz-toolbar">
+        <Link href="/admin/business" className="cms-btn cms-btn--ghost">Voltar</Link>
+        <strong className="biz-toolbar__name">{project.title}</strong>
+        <span className="biz-save">{status}</span>
+        <div className="biz-viewports">
+          {(["desktop", "tablet", "mobile"] as const).map((v) => (
+            <button key={v} type="button" className={viewport === v ? "is-on" : ""} onClick={() => setViewport(v)}>
+              {v === "desktop" ? "Desktop" : v === "tablet" ? "Tablet" : "Mobile"}
+            </button>
+          ))}
+        </div>
+        <a className="cms-btn cms-btn--ghost" href={`/business/${project.slug}`} target="_blank" rel="noreferrer">Visualizar</a>
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={copyLink}>Compartilhar</button>
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={() => void duplicate()}>Duplicar</button>
+        {project.status === "published" ? (
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => void publish("unpublish")}>Despublicar</button>
+        ) : (
+          <button type="button" className="cms-btn cms-btn--primary" onClick={() => void publish("publish")}>Publicar</button>
+        )}
+      </header>
+
+      <div className="biz-editor__grid">
+        <aside className="biz-pane">
+          <div className="biz-tabs">
+            <button type="button" className={tab === "blocks" ? "is-on" : ""} onClick={() => setTab("blocks")}>Blocos</button>
+            <button type="button" className={tab === "design" ? "is-on" : ""} onClick={() => setTab("design")}>Design</button>
+            <button type="button" className={tab === "seo" ? "is-on" : ""} onClick={() => setTab("seo")}>SEO</button>
+          </div>
+          {tab === "blocks" ? (
+            <div className="biz-block-add">
+              {BLOCK_TYPES.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => {
+                    const block = createBlock(type);
+                    patch((p) => ({ ...p, blocks: [...p.blocks, block] }));
+                    setSelected(block.id);
+                  }}
+                >
+                  {BLOCK_LABELS[type]}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {tab === "design" ? <DesignForm project={project} companies={companies} password={password} setPassword={setPassword} patch={patch} /> : null}
+          {tab === "seo" ? <SeoForm project={project} patch={patch} /> : null}
+        </aside>
+
+        <div className={`biz-canvas biz-canvas--${viewport}`}>
+          <BusinessPublicView project={project} company={company} />
+        </div>
+
+        <aside className="biz-pane">
+          <h3 className="biz-h2">Pagina</h3>
+          <ol className="biz-layers">
+            {project.blocks.map((block, index) => (
+              <li key={block.id} className={selected === block.id ? "is-on" : ""}>
+                <button type="button" onClick={() => setSelected(block.id)}>
+                  {BLOCK_LABELS[block.type as BlockType] || block.type}
+                  {block.hidden ? " (oculto)" : ""}
+                </button>
+                <span>
+                  <button type="button" disabled={index === 0} onClick={() => patch((p) => move(p, index, -1))}>Sobe</button>
+                  <button type="button" disabled={index === project.blocks.length - 1} onClick={() => patch((p) => move(p, index, 1))}>Desce</button>
+                </span>
+              </li>
+            ))}
+          </ol>
+          {selectedBlock ? (
+            <BlockFields
+              block={selectedBlock}
+              onChange={(next) => patch((p) => ({ ...p, blocks: p.blocks.map((b) => (b.id === next.id ? next : b)) }))}
+              onDuplicate={() => {
+                const copy = { ...selectedBlock, id: createBlock(selectedBlock.type).id, content: { ...selectedBlock.content } };
+                patch((p) => {
+                  const i = p.blocks.findIndex((b) => b.id === selectedBlock.id);
+                  const blocks = [...p.blocks];
+                  blocks.splice(i + 1, 0, copy);
+                  return { ...p, blocks };
+                });
+                setSelected(copy.id);
+              }}
+              onRemove={() => {
+                patch((p) => ({ ...p, blocks: p.blocks.filter((b) => b.id !== selectedBlock.id) }));
+                setSelected("");
+              }}
+            />
+          ) : (
+            <p className="biz-muted">Selecione um bloco para editar.</p>
+          )}
+          <button type="button" className="cms-btn cms-btn--ghost" onClick={() => void remove()}>Excluir projeto</button>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
+function move(project: BusinessProject, index: number, dir: number): BusinessProject {
+  const next = [...project.blocks];
+  const target = index + dir;
+  if (target < 0 || target >= next.length) return project;
+  const [item] = next.splice(index, 1);
+  next.splice(target, 0, item);
+  return { ...project, blocks: next };
+}
+
+function DesignForm({
+  project,
+  companies,
+  password,
+  setPassword,
+  patch,
+}: {
+  project: BusinessProject;
+  companies: BusinessCompany[];
+  password: string;
+  setPassword: (v: string) => void;
+  patch: (fn: (p: BusinessProject) => BusinessProject) => void;
+}) {
+  const d = project.design;
+  return (
+    <div className="biz-form">
+      <Field label="Titulo"><Input value={project.title} onChange={(v) => patch((p) => ({ ...p, title: v }))} /></Field>
+      <Field label="Slug"><Input value={project.slug} onChange={(v) => patch((p) => ({ ...p, slug: v }))} /></Field>
+      <Field label="Descricao"><Textarea value={project.description} onChange={(v) => patch((p) => ({ ...p, description: v }))} rows={3} /></Field>
+      <Field label="Empresa">
+        <select className="cms-input" value={project.companyId} onChange={(e) => patch((p) => ({ ...p, companyId: e.target.value }))}>
+          <option value="">Sem empresa</option>
+          {companies.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+      </Field>
+      <ImageField label="Capa" value={project.cover} onChange={(v) => patch((p) => ({ ...p, cover: v }))} />
+      <Field label="Status">
+        <select className="cms-input" value={project.status} onChange={(e) => patch((p) => ({ ...p, status: e.target.value as BusinessProject["status"] }))}>
+          {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+      </Field>
+      <Field label="Visibilidade">
+        <select className="cms-input" value={project.visibility} onChange={(e) => patch((p) => ({ ...p, visibility: e.target.value as BusinessProject["visibility"] }))}>
+          {Object.entries(VISIBILITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+      </Field>
+      <Field label="Nova senha (vazio mantem a atual)"><Input type="password" value={password} onChange={setPassword} /></Field>
+      <Field label="Tema">
+        <select className="cms-input" value={d.theme} onChange={(e) => patch((p) => ({ ...p, design: { ...p.design, theme: e.target.value as BusinessProject["design"]["theme"] } }))}>
+          <option value="dark">Escuro</option>
+          <option value="light">Claro</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </Field>
+      <ImageField label="Logo" value={d.logo} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, logo: v } }))} />
+      <Field label="Cor primaria"><Input value={d.primary} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, primary: v } }))} /></Field>
+      <Field label="Cor de fundo"><Input value={d.background} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, background: v } }))} /></Field>
+      <Field label="Cor do texto"><Input value={d.text} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, text: v } }))} /></Field>
+    </div>
+  );
+}
+
+function SeoForm({ project, patch }: { project: BusinessProject; patch: (fn: (p: BusinessProject) => BusinessProject) => void }) {
+  return (
+    <div className="biz-form">
+      <Field label="Title"><Input value={project.seo.title} onChange={(v) => patch((p) => ({ ...p, seo: { ...p.seo, title: v } }))} /></Field>
+      <Field label="Description"><Textarea value={project.seo.description} onChange={(v) => patch((p) => ({ ...p, seo: { ...p.seo, description: v } }))} rows={3} /></Field>
+      <Field label="Robots">
+        <select className="cms-input" value={project.seo.robots} onChange={(e) => patch((p) => ({ ...p, seo: { ...p.seo, robots: e.target.value as "index" | "noindex" } }))}>
+          <option value="noindex">noindex</option>
+          <option value="index">index</option>
+        </select>
+      </Field>
+    </div>
+  );
+}
+
+function BlockFields({
+  block,
+  onChange,
+  onDuplicate,
+  onRemove,
+}: {
+  block: BusinessBlock;
+  onChange: (b: BusinessBlock) => void;
+  onDuplicate: () => void;
+  onRemove: () => void;
+}) {
+  const c = block.content;
+  function set(key: string, value: unknown) {
+    onChange({ ...block, content: { ...c, [key]: value } });
+  }
+  return (
+    <div className="biz-form">
+      <h3 className="biz-h2">{BLOCK_LABELS[block.type]}</h3>
+      <label className="biz-check">
+        <input type="checkbox" checked={!block.hidden} onChange={(e) => onChange({ ...block, hidden: !e.target.checked })} />
+        Visivel
+      </label>
+      {["hero", "text", "video", "pdf", "cta", "timeline", "pricing", "form"].includes(block.type) ? (
+        <Field label="Titulo"><Input value={String(c.title ?? c.q ?? "")} onChange={(v) => set(block.type === "faq" ? "q" : "title", v)} /></Field>
+      ) : null}
+      {block.type === "hero" || block.type === "cta" || block.type === "video" || block.type === "form" ? (
+        <Field label="Texto"><Textarea value={String(c.text ?? "")} onChange={(v) => set("text", v)} rows={3} /></Field>
+      ) : null}
+      {block.type === "hero" ? (
+        <>
+          <Field label="Subtitulo"><Input value={String(c.subtitle ?? "")} onChange={(v) => set("subtitle", v)} /></Field>
+          <ImageField label="Imagem" value={String(c.image ?? "")} onChange={(v) => set("image", v)} />
+          <Field label="Botao"><Input value={String(c.buttonLabel ?? "")} onChange={(v) => set("buttonLabel", v)} /></Field>
+          <Field label="Link do botao"><Input value={String(c.buttonHref ?? "")} onChange={(v) => set("buttonHref", v)} /></Field>
+        </>
+      ) : null}
+      {block.type === "text" || block.type === "html" ? (
+        <Field label="Conteudo"><Textarea value={String(c.html ?? "")} onChange={(v) => set("html", v)} rows={8} /></Field>
+      ) : null}
+      {block.type === "image" ? (
+        <>
+          <ImageField label="Imagem" value={String(c.src ?? "")} onChange={(v) => set("src", v)} />
+          <Field label="Alt"><Input value={String(c.alt ?? "")} onChange={(v) => set("alt", v)} /></Field>
+          <Field label="Legenda"><Input value={String(c.caption ?? "")} onChange={(v) => set("caption", v)} /></Field>
+        </>
+      ) : null}
+      {block.type === "gallery" ? (
+        <GalleryField label="Imagens" values={Array.isArray(c.images) ? c.images.map(String) : []} onChange={(urls) => set("images", urls)} />
+      ) : null}
+      {block.type === "video" ? <Field label="URL YouTube ou Vimeo"><Input value={String(c.url ?? "")} onChange={(v) => set("url", v)} /></Field> : null}
+      {block.type === "pdf" ? (
+        <Field label="URL do PDF" hint="Envie o PDF em Midias e cole o caminho.">
+          <Input value={String(c.src ?? "")} onChange={(v) => set("src", v)} />
+        </Field>
+      ) : null}
+      {block.type === "cta" || block.type === "button" || block.type === "contact" ? (
+        <>
+          <Field label="Rotulo do botao"><Input value={String(c.buttonLabel ?? c.label ?? "")} onChange={(v) => set(block.type === "button" ? "label" : "buttonLabel", v)} /></Field>
+          <Field label="Link"><Input value={String(c.buttonHref ?? c.href ?? "")} onChange={(v) => set(block.type === "button" ? "href" : "buttonHref", v)} /></Field>
+        </>
+      ) : null}
+      {block.type === "contact" ? (
+        <>
+          <Field label="Telefone"><Input value={String(c.phone ?? "")} onChange={(v) => set("phone", v)} /></Field>
+          <Field label="WhatsApp"><Input value={String(c.whatsapp ?? "")} onChange={(v) => set("whatsapp", v)} /></Field>
+          <Field label="E-mail"><Input value={String(c.email ?? "")} onChange={(v) => set("email", v)} /></Field>
+        </>
+      ) : null}
+      {["cards", "stats", "testimonials", "timeline", "faq"].includes(block.type) ? (
+        <ListEditor
+          items={Array.isArray(c.items) ? (c.items as Record<string, string>[]) : []}
+          keys={block.type === "stats" ? ["value", "label"] : block.type === "faq" ? ["q", "a"] : block.type === "testimonials" ? ["name", "role", "text"] : ["title", "text"]}
+          onChange={(items) => set("items", items)}
+        />
+      ) : null}
+      {block.type === "pricing" ? (
+        <ListEditor
+          items={Array.isArray(c.plans) ? (c.plans as Record<string, string>[]) : []}
+          keys={["name", "price", "text", "buttonLabel", "buttonHref"]}
+          onChange={(items) => set("plans", items)}
+        />
+      ) : null}
+      <div className="biz-actions">
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={onDuplicate}>Duplicar bloco</button>
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={onRemove}>Remover bloco</button>
+      </div>
+    </div>
+  );
+}
+
+function ListEditor({
+  items,
+  keys,
+  onChange,
+}: {
+  items: Record<string, string>[];
+  keys: string[];
+  onChange: (items: Record<string, string>[]) => void;
+}) {
+  return (
+    <div className="biz-list-edit">
+      {items.map((item, i) => (
+        <div key={i} className="cms-card">
+          {keys.map((key) => (
+            <Field key={key} label={key}>
+              <Input
+                value={String(item[key] ?? "")}
+                onChange={(v) => {
+                  const next = items.map((row, idx) => (idx === i ? { ...row, [key]: v } : row));
+                  onChange(next);
+                }}
+              />
+            </Field>
+          ))}
+          <button type="button" className="cms-card__remove" onClick={() => onChange(items.filter((_, idx) => idx !== i))}>Remover</button>
+        </div>
+      ))}
+      <button type="button" className="cms-add-btn" onClick={() => onChange([...items, Object.fromEntries(keys.map((k) => [k, ""]))])}>
+        Adicionar item
+      </button>
+    </div>
+  );
+}

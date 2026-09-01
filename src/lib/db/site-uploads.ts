@@ -98,7 +98,9 @@ export async function readUpload(name: string): Promise<{ mime: string; buf: Buf
               ? "image/avif"
               : ext === ".svg"
                 ? "image/svg+xml"
-                : "image/jpeg";
+                : ext === ".pdf"
+                  ? "application/pdf"
+                  : "image/jpeg";
     return { mime, buf };
   } catch {
     return null;

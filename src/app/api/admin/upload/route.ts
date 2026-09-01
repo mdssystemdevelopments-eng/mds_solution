@@ -14,6 +14,7 @@ const MIME_EXT: Record<string, string> = {
   "image/webp": ".webp",
   "image/avif": ".avif",
   "image/svg+xml": ".svg",
+  "application/pdf": ".pdf",
 };
 
 function sniffMime(buf: Buffer): string | null {
@@ -38,6 +39,7 @@ function sniffMime(buf: Buffer): string | null {
   if (buf.includes(Buffer.from("ftypavif")) || buf.includes(Buffer.from("ftypavis"))) {
     return "image/avif";
   }
+  if (buf.subarray(0, 4).toString("ascii") === "%PDF") return "application/pdf";
   return null;
 }
 
@@ -68,17 +70,17 @@ export async function POST(req: Request) {
 
   const file = form.get("file");
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Selecione um arquivo de imagem." }, { status: 400 });
+    return NextResponse.json({ error: "Selecione um arquivo." }, { status: 400 });
   }
   if (file.size <= 0 || file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Imagem deve ter até 3,5 MB." }, { status: 400 });
+    return NextResponse.json({ error: "Arquivo deve ter ate 3,5 MB." }, { status: 400 });
   }
 
   const buf = Buffer.from(await file.arrayBuffer());
   const mime = sniffMime(buf);
   if (!mime || !MIME_EXT[mime]) {
     return NextResponse.json(
-      { error: "Arquivo não reconhecido. Use JPG, PNG, GIF, WEBP, AVIF ou SVG." },
+      { error: "Arquivo nao reconhecido. Use imagem ou PDF." },
       { status: 400 },
     );
   }
