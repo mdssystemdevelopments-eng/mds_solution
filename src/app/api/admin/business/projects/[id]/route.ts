@@ -25,7 +25,7 @@ function cleanBlocks(input: unknown): BusinessBlock[] {
     const type = BLOCK_TYPES.includes(item.type as BusinessBlock["type"]) ? (item.type as BusinessBlock["type"]) : "text";
     const content = item.content && typeof item.content === "object" ? (item.content as Record<string, unknown>) : {};
     if ((type === "html" || type === "text") && typeof content.html === "string") {
-      content.html = sanitizeHtml(content.html);
+      content.html = sanitizeHtml(content.html, type === "html" ? 80000 : 20000, false);
     }
     if (typeof content.text === "string") content.text = sanitizePlain(content.text, 8000);
     for (const key of ["image", "src", "thumb", "logo", "ogImage"]) {
@@ -112,6 +112,12 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
         (typeof body.design === "object" && body.design
           ? (body.design as { logo?: string }).logo
           : current.design.logo) ?? current.design.logo,
+      ),
+      coverColor: sanitizePlain(
+        (typeof body.design === "object" && body.design
+          ? (body.design as { coverColor?: string }).coverColor
+          : current.design.coverColor) || current.design.coverColor || "",
+        24,
       ),
     },
     seo: {

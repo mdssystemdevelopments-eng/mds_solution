@@ -8,7 +8,31 @@ import { lookTheme } from "@/lib/business/palettes";
 import { PAGE_CTA } from "@/lib/business/cta";
 import { LeadAction, LeadProvider } from "@/components/business/business-lead";
 
-function IsolatedHtml({ html, preview }: { html: string; preview?: boolean }) {
+function rewriteMedia(html: string): string {
+  return html
+    .replace(/```\w*/g, "")
+    .replace(/(src|href)=["']([^"']+)["']/gi, (_full, attr: string, url: string) => {
+      const next = mediaSrc(url) || url;
+      return `${attr}="${next}"`;
+    });
+}
+
+function SiteFrame({ html }: { html: string }) {
+  const body = rewriteMedia(sanitizeHtml(html, 80000, false));
+  const srcDoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="/"><style>html,body{margin:0;min-height:100%;background:#fff;color:#161616;}img,video,iframe{max-width:100%;height:auto;}</style></head><body>${body}</body></html>`;
+  return (
+    <div className="bp-siteframe">
+      <div className="bp-siteframe__bar" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <iframe className="bp-siteframe__view" srcDoc={srcDoc} title="Site" sandbox="allow-popups allow-forms" />
+    </div>
+  );
+}
+
+function IsolatedHtml({ html }: { html: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const host = ref.current;
@@ -16,9 +40,9 @@ function IsolatedHtml({ html, preview }: { html: string; preview?: boolean }) {
     const root = host.shadowRoot ?? host.attachShadow({ mode: "open" });
     root.innerHTML = [
       "<style>:host{display:block;color:var(--bp-text);font:inherit}p,h1,h2,h3,h4,li{margin:0 0 .7em}img,video,iframe{max-width:100%;height:auto}*{box-sizing:border-box;max-width:100%}</style>",
-      sanitizeHtml(html, 20000, preview),
+      sanitizeHtml(html, 20000, true),
     ].join("");
-  }, [html, preview]);
+  }, [html]);
   return <div ref={ref} className="bp-html" />;
 }
 
@@ -66,7 +90,7 @@ function BlockView({
     return (
       <section className="bp-wrap bp-section">
         {str(c, "title") ? <h2>{str(c, "title")}</h2> : null}
-        {plain ? <IsolatedHtml html={html} preview={preview} /> : null}
+        {plain ? <IsolatedHtml html={html} /> : null}
       </section>
     );
   }
@@ -353,8 +377,8 @@ function BlockView({
     const plain = html.replace(/<[^>]+>/g, "").trim();
     if (!plain) return <EmptyNote preview={preview} text="Cole o HTML neste bloco." />;
     return (
-      <section className="bp-wrap bp-section">
-        <IsolatedHtml html={html} preview={preview} />
+      <section className="bp-siteframe-wrap">
+        <SiteFrame html={html} />
       </section>
     );
   }
@@ -427,6 +451,7 @@ export function BusinessPublicView({
           ["--bp-primary" as string]: d.primary,
           ["--bp-secondary" as string]: d.secondary,
           ["--bp-on-primary" as string]: d.onPrimary || (theme === "light" ? "#ffffff" : "#031018"),
+          ["--bp-cover" as string]: d.coverColor || d.background,
           ["--bp-radius" as string]: d.radius,
           fontFamily: d.font || "system-ui, sans-serif",
         }}

@@ -8,6 +8,7 @@ import { AdminPage } from "@/components/admin/admin-page";
 import { BusinessNav } from "@/components/admin/business/business-nav";
 import { Input } from "@/components/admin/cms/form-fields";
 import { mediaSrc } from "@/lib/business/helpers";
+import { clientBusinessUrl } from "@/lib/site-url";
 import { STATUS_LABELS, VISIBILITY_LABELS, type BusinessStatus } from "@/lib/business/types";
 
 type Row = {
@@ -103,7 +104,7 @@ export function BusinessProjects() {
               <div className="biz-row__body">
                 <strong>{item.title}</strong>
                 <p>
-                  /business/{item.slug} · {item.companyName || "Sem empresa"} · {STATUS_LABELS[item.status]} ·{" "}
+                  {clientBusinessUrl(item.slug).replace(/^https?:\/\//, "")} · {item.companyName || "Sem empresa"} · {STATUS_LABELS[item.status]} ·{" "}
                   {VISIBILITY_LABELS[item.visibility]} · {item.views} views
                 </p>
               </div>

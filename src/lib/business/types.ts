@@ -69,6 +69,7 @@ export type BusinessDesign = {
   background: string;
   text: string;
   onPrimary: string;
+  coverColor: string;
   whatsapp: string;
   font: string;
   radius: string;
@@ -141,6 +142,7 @@ export const DEFAULT_DESIGN: BusinessDesign = {
   background: "#030508",
   text: "#f4f7fa",
   onPrimary: "#031018",
+  coverColor: "",
   whatsapp: "",
   font: "system-ui",
   radius: "12px",

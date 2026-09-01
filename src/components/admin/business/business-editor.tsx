@@ -10,7 +10,8 @@ import { Field, Input, Textarea } from "@/components/admin/cms/form-fields";
 import { BusinessPublicView } from "@/components/business/business-public-view";
 import { BusinessLookPicker } from "@/components/admin/business/business-look-picker";
 import { createBlock } from "@/lib/business/blocks";
-import { applyLook, lookTheme } from "@/lib/business/palettes";
+import { applyLook } from "@/lib/business/palettes";
+import { clientBusinessUrl } from "@/lib/site-url";
 import {
   BLOCK_GROUPS,
   BLOCK_LABELS,
@@ -156,7 +157,7 @@ export function BusinessEditor({ id }: { id: string }) {
 
   function copyLink() {
     if (!project) return;
-    const url = `${window.location.origin}/business/${project.slug}`;
+    const url = clientBusinessUrl(project.slug);
     void navigator.clipboard.writeText(url);
     toast.success(project.visibility === "private" ? "Link copiado. O visitante precisara da senha." : "Link copiado.");
   }
@@ -180,23 +181,12 @@ export function BusinessEditor({ id }: { id: string }) {
             </button>
           ))}
         </div>
-        <div className="biz-viewports">
-          <button
-            type="button"
-            className={lookTheme(project.design.theme) === "light" ? "is-on" : ""}
-            onClick={() => patch((p) => ({ ...p, design: applyLook(p.design, { theme: "light" }) }))}
-          >
-            Claro
-          </button>
-          <button
-            type="button"
-            className={lookTheme(project.design.theme) === "dark" ? "is-on" : ""}
-            onClick={() => patch((p) => ({ ...p, design: applyLook(p.design, { theme: "dark" }) }))}
-          >
-            Escuro
-          </button>
-        </div>
-        <a className="cms-btn cms-btn--ghost" href={`/business/${project.slug}`} target="_blank" rel="noreferrer">
+        <a
+          className="cms-btn cms-btn--ghost"
+          href={project.status === "published" ? clientBusinessUrl(project.slug) : `/business/${project.slug}`}
+          target="_blank"
+          rel="noreferrer"
+        >
           Visualizar
         </a>
         <button type="button" className="cms-btn cms-btn--ghost" onClick={copyLink}>
@@ -212,7 +202,14 @@ export function BusinessEditor({ id }: { id: string }) {
           </button>
         )}
       </header>
-
+      <BusinessLookPicker
+        compact
+        theme={project.design.theme}
+        palette={project.design.palette}
+        coverColor={project.design.coverColor || project.design.background}
+        onChange={(next) => patch((p) => ({ ...p, design: applyLook(p.design, next) }))}
+        onCoverColor={(v) => patch((p) => ({ ...p, design: { ...p.design, coverColor: v } }))}
+      />
       <div className="biz-editor__grid">
         <aside className="biz-pane">
           <h3 className="biz-h2">Pagina</h3>
@@ -367,7 +364,7 @@ function ProjectForm({
       <Field label="Titulo">
         <Input value={project.title} onChange={(v) => patch((p) => ({ ...p, title: v }))} />
       </Field>
-      <Field label="Slug" hint="Endereco publico: /business/slug">
+      <Field label="Slug" hint={`O cliente abre: ${clientBusinessUrl(project.slug)}`}>
         <Input value={project.slug} onChange={(v) => patch((p) => ({ ...p, slug: v }))} />
       </Field>
       <Field label="Descricao">
@@ -446,21 +443,23 @@ function DesignForm({
       <BusinessLookPicker
         theme={d.theme}
         palette={d.palette}
+        coverColor={d.coverColor || d.background}
         onChange={(next) => patch((p) => ({ ...p, design: applyLook(p.design, next) }))}
+        onCoverColor={(v) => patch((p) => ({ ...p, design: { ...p.design, coverColor: v } }))}
+      />
+      <ColorField
+        label="Cor da capa"
+        hint="So o hero e a capa. O resto da pagina nao muda."
+        value={d.coverColor || d.background}
+        onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, coverColor: v } }))}
       />
       <ImageField label="Logo" value={d.logo} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, logo: v } }))} />
       <Field label="WhatsApp deste projeto" hint="Se vazio, usa o da empresa ou o da MDS. So numeros.">
         <Input value={d.whatsapp || ""} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, whatsapp: v } }))} />
       </Field>
-      <Field label="Cor primaria">
-        <Input value={d.primary} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, primary: v } }))} />
-      </Field>
-      <Field label="Cor de fundo">
-        <Input value={d.background} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, background: v } }))} />
-      </Field>
-      <Field label="Cor do texto">
-        <Input value={d.text} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, text: v } }))} />
-      </Field>
+      <ColorField label="Cor primaria" value={d.primary} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, primary: v } }))} />
+      <ColorField label="Cor de fundo da pagina" value={d.background} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, background: v } }))} />
+      <ColorField label="Cor do texto" value={d.text} onChange={(v) => patch((p) => ({ ...p, design: { ...p.design, text: v } }))} />
       <label className="biz-check">
         <input
           type="checkbox"
@@ -478,6 +477,34 @@ function DesignForm({
         Mostrar rodape
       </label>
     </div>
+  );
+}
+
+function toColorInput(value: string): string {
+  const v = (value || "").trim();
+  if (/^#[0-9a-f]{6}$/i.test(v)) return v;
+  if (/^#[0-9a-f]{3}$/i.test(v)) return `#${v[1]}${v[1]}${v[2]}${v[2]}${v[3]}${v[3]}`;
+  return "#111111";
+}
+
+function ColorField({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <Field label={label} hint={hint}>
+      <div className="biz-color">
+        <input type="color" value={toColorInput(value)} onChange={(e) => onChange(e.target.value)} />
+        <Input value={value} onChange={onChange} />
+      </div>
+    </Field>
   );
 }
 

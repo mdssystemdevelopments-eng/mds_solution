@@ -99,9 +99,11 @@ export function applyLook(
     theme,
     palette: palette.id,
     whatsapp: current.whatsapp || "",
+    coverColor: current.coverColor || current.background || "",
   };
 }
 
 export function designFromLook(theme: LookTheme, paletteId: string): BusinessDesign {
-  return applyLook(DEFAULT_DESIGN, { theme, palette: paletteId });
+  const d = applyLook(DEFAULT_DESIGN, { theme, palette: paletteId });
+  return { ...d, coverColor: d.background };
 }

@@ -118,10 +118,14 @@ export function templateBlocks(template: BusinessTemplate, title: string): Busin
 }
 
 export function templateDesign(template: BusinessTemplate): BusinessDesign {
-  if (template === "minimalista") return applyLook(DEFAULT_DESIGN, { theme: "light", palette: "grafite" });
-  if (template === "corporativo") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "oceano" });
-  if (template === "premium") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "ouro" });
-  if (template === "imobiliario") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "floresta" });
-  if (template === "portfolio") return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "noite" });
-  return applyLook(DEFAULT_DESIGN, { theme: "dark", palette: "mds" });
+  const themed = (theme: "light" | "dark", palette: string): BusinessDesign => {
+    const d = applyLook(DEFAULT_DESIGN, { theme, palette });
+    return { ...d, coverColor: d.background };
+  };
+  if (template === "minimalista") return themed("light", "grafite");
+  if (template === "corporativo") return themed("dark", "oceano");
+  if (template === "premium") return themed("dark", "ouro");
+  if (template === "imobiliario") return themed("dark", "floresta");
+  if (template === "portfolio") return themed("dark", "noite");
+  return themed("dark", "mds");
 }
