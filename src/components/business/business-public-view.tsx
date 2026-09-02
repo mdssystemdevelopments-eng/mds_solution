@@ -18,9 +18,20 @@ function rewriteMedia(html: string): string {
     });
 }
 
-function SiteFrame({ html }: { html: string }) {
-  const body = rewriteMedia(sanitizeHtml(html, 80000, false));
-  const srcDoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="/"><style>html,body{margin:0;min-height:100%;background:#fff;color:#161616;}img,video,iframe{max-width:100%;height:auto;}</style></head><body>${body}</body></html>`;
+function SiteFrame({ html, src }: { html?: string; src?: string }) {
+  const url = mediaSrc(src || "");
+  const raw = String(html || "");
+  const sandbox = "allow-scripts allow-forms allow-popups allow-modals";
+  const frame = url ? (
+    <iframe className="bp-siteframe__view" src={url} title="Site" sandbox={sandbox} />
+  ) : (
+    <iframe
+      className="bp-siteframe__view"
+      srcDoc={toSrcDoc(raw)}
+      title="Site"
+      sandbox={sandbox}
+    />
+  );
   return (
     <div className="bp-siteframe">
       <div className="bp-siteframe__bar" aria-hidden="true">
@@ -29,9 +40,15 @@ function SiteFrame({ html }: { html: string }) {
         <i />
         <em>preview do site</em>
       </div>
-      <iframe className="bp-siteframe__view" srcDoc={srcDoc} title="Site" sandbox="allow-popups allow-forms" />
+      {frame}
     </div>
   );
+}
+
+function toSrcDoc(html: string): string {
+  const body = rewriteMedia(sanitizeHtml(html, 400000, false, { keepScripts: true, keepDocument: true }));
+  if (/<!doctype html/i.test(body) || /<html[\s>]/i.test(body)) return body;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><base href="/"><style>html,body{margin:0;min-height:100%;background:#fff;color:#161616;}img,video,iframe{max-width:100%;height:auto;}</style></head><body>${body}</body></html>`;
 }
 
 function SectionHead({ kicker, title }: { kicker?: string; title?: string }) {
@@ -387,11 +404,11 @@ function BlockView({
 
   if (block.type === "html") {
     const html = str(c, "html");
-    const plain = html.replace(/<[^>]+>/g, "").trim();
-    if (!plain) return <EmptyNote preview={preview} text="Cole o HTML neste bloco." />;
+    const src = mediaSrc(str(c, "src"));
+    if (!src && !html.trim()) return <EmptyNote preview={preview} text="Envie o arquivo HTML neste bloco." />;
     return (
       <section className="bp-wrap bp-section">
-        <SiteFrame html={html} />
+        <SiteFrame html={html} src={src} />
       </section>
     );
   }

@@ -6,7 +6,7 @@ import { deleteUpload, listUploads, saveUpload } from "@/lib/db/site-uploads";
 
 export const runtime = "nodejs";
 
-const MAX_BYTES = 3.5 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024;
 const MIME_EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
@@ -15,6 +15,7 @@ const MIME_EXT: Record<string, string> = {
   "image/avif": ".avif",
   "image/svg+xml": ".svg",
   "application/pdf": ".pdf",
+  "text/html": ".html",
 };
 
 function sniffMime(buf: Buffer): string | null {
@@ -40,6 +41,10 @@ function sniffMime(buf: Buffer): string | null {
     return "image/avif";
   }
   if (buf.subarray(0, 4).toString("ascii") === "%PDF") return "application/pdf";
+  const htmlHead = buf.subarray(0, 800).toString("utf8").replace(/^\uFEFF/, "").trimStart().toLowerCase();
+  if (htmlHead.startsWith("<!doctype html") || htmlHead.startsWith("<html") || htmlHead.startsWith("<head") || /<html[\s>]/.test(htmlHead.slice(0, 400))) {
+    return "text/html";
+  }
   return null;
 }
 
@@ -73,14 +78,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Selecione um arquivo." }, { status: 400 });
   }
   if (file.size <= 0 || file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "Arquivo deve ter ate 3,5 MB." }, { status: 400 });
+    return NextResponse.json({ error: "Arquivo deve ter ate 4 MB." }, { status: 400 });
   }
 
   const buf = Buffer.from(await file.arrayBuffer());
   const mime = sniffMime(buf);
   if (!mime || !MIME_EXT[mime]) {
     return NextResponse.json(
-      { error: "Arquivo nao reconhecido. Use imagem ou PDF." },
+      { error: "Arquivo nao reconhecido. Use imagem, PDF ou HTML." },
       { status: 400 },
     );
   }

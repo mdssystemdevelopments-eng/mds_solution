@@ -634,11 +634,26 @@ function BlockFields({
         </>
       ) : null}
 
-      {block.type === "text" || block.type === "html" ? (
-        <Field
-          label="Conteudo"
-          hint={block.type === "html" ? "Cole so o trecho da pagina, sem html, head, body ou CSS de tela cheia." : undefined}
-        >
+      {block.type === "html" ? (
+        <>
+          <FileField
+            label="Arquivo HTML do site"
+            hint="Envie o .html completo, ate 4 MB. Sites feitos em React so abrem assim. Colar o codigo no campo de baixo nao funciona quando o arquivo e grande."
+            value={String(c.src ?? "")}
+            onChange={(v) => set("src", v)}
+            accept=".html,text/html"
+          />
+          <Field
+            label="Trecho HTML"
+            hint="So para HTML curto. Se colar um site inteiro, use o envio de arquivo acima."
+          >
+            <Textarea value={String(c.html ?? "")} onChange={(v) => set("html", v)} rows={8} />
+          </Field>
+        </>
+      ) : null}
+
+      {block.type === "text" ? (
+        <Field label="Conteudo">
           <Textarea value={String(c.html ?? "")} onChange={(v) => set("html", v)} rows={8} />
         </Field>
       ) : null}

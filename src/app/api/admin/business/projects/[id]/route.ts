@@ -24,8 +24,15 @@ function cleanBlocks(input: unknown): BusinessBlock[] {
     const item = raw as Record<string, unknown>;
     const type = BLOCK_TYPES.includes(item.type as BusinessBlock["type"]) ? (item.type as BusinessBlock["type"]) : "text";
     const content = item.content && typeof item.content === "object" ? (item.content as Record<string, unknown>) : {};
-    if ((type === "html" || type === "text") && typeof content.html === "string") {
-      content.html = sanitizeHtml(content.html, type === "html" ? 80000 : 20000, false);
+    if (type === "html") {
+      if (typeof content.src === "string") content.src = mediaSrc(content.src);
+      if (content.src) {
+        content.html = "";
+      } else if (typeof content.html === "string") {
+        content.html = sanitizeHtml(content.html, 200000, false, { keepScripts: true, keepDocument: true });
+      }
+    } else if (type === "text" && typeof content.html === "string") {
+      content.html = sanitizeHtml(content.html, 20000, false);
     }
     if (typeof content.text === "string") content.text = sanitizePlain(content.text, 8000);
     for (const key of ["image", "src", "thumb", "logo", "ogImage"]) {

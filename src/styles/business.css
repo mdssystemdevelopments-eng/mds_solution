@@ -717,7 +717,7 @@
 .bp-siteframe__view {
   display: block;
   width: 100%;
-  height: 32rem;
+  height: min(78vh, 44rem);
   border: 0;
   background: #fff;
 }

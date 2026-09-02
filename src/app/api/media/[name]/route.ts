@@ -22,7 +22,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ name: string }
 
   return new NextResponse(new Uint8Array(file.buf), {
     headers: {
-      "Content-Type": file.mime,
+      "Content-Type": file.mime === "text/html" ? "text/html; charset=utf-8" : file.mime,
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });

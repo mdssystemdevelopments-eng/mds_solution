@@ -191,7 +191,7 @@ export function FileField({
   }
 
   return (
-    <Field label={label} hint={hint ?? "PDF ate 3,5 MB."}>
+    <Field label={label} hint={hint ?? (accept.includes("html") ? "HTML ate 4 MB." : "PDF ate 4 MB.")}>
       <div className="cms-image-field">
         {value ? (
           <a href={value} target="_blank" rel="noreferrer" className="cms-image-field__file">

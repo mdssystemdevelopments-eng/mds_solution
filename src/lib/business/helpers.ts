@@ -17,13 +17,23 @@ export function mediaSrc(url: unknown): string {
   return value;
 }
 
-export function sanitizeHtml(input: unknown, max = 20000, preview = false): string {
-  let html = String(input ?? "")
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+export function sanitizeHtml(
+  input: unknown,
+  max = 20000,
+  preview = false,
+  opts?: { keepScripts?: boolean; keepDocument?: boolean },
+): string {
+  let html = String(input ?? "");
+  if (!opts?.keepScripts) {
+    html = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+  }
+  html = html
     .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/<\/?(html|head|body|meta|link)[^>]*>/gi, "")
     .replace(/javascript:/gi, "")
     .replace(/on\w+=["'][^"']*["']/gi, "");
+  if (!opts?.keepDocument) {
+    html = html.replace(/<\/?(html|head|body|meta|link)[^>]*>/gi, "");
+  }
   if (preview) {
     html = html
       .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, "")
