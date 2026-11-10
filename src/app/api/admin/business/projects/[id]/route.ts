@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/supabase/require-admin";
 import { slugify } from "@/modules/shared/utils/slugify";
 import { deleteProject, getProject, saveProject, slugTaken } from "@/lib/business/store";
+import { deleteSiteFiles } from "@/lib/business/site-files";
 import { hashBusinessPassword } from "@/lib/business/password";
 import { mediaSrc, sanitizeHtml, sanitizePlain } from "@/lib/business/helpers";
+import { keepGithubRepo, keepHttpUrl } from "@/lib/business/github";
 import { lookTheme } from "@/lib/business/palettes";
 import {
   BLOCK_TYPES,
@@ -31,6 +33,9 @@ function cleanBlocks(input: unknown): BusinessBlock[] {
       } else if (typeof content.html === "string") {
         content.html = sanitizeHtml(content.html, 200000, false, { keepScripts: true, keepDocument: true });
       }
+    } else if (type === "site") {
+      content.repo = keepGithubRepo(content.repo);
+      content.url = keepHttpUrl(content.url);
     } else if (type === "text" && typeof content.html === "string") {
       content.html = sanitizeHtml(content.html, 20000, false);
     }
@@ -134,6 +139,8 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
       robots: (body.seo as { robots?: "index" | "noindex" } | undefined)?.robots === "index" ? "index" : "noindex",
     },
     blocks: body.blocks ? cleanBlocks(body.blocks) : current.blocks,
+    githubRepo: keepGithubRepo(body.githubRepo ?? current.githubRepo),
+    githubSite: keepHttpUrl(body.githubSite ?? current.githubSite),
   };
 
   if (typeof body.password === "string") {
@@ -151,6 +158,7 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
   const auth = await requireAdmin();
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
   const { id } = await ctx.params;
+  await deleteSiteFiles(id);
   const ok = await deleteProject(id);
   if (!ok) return NextResponse.json({ error: "Projeto nao encontrado." }, { status: 404 });
   return NextResponse.json({ ok: true });

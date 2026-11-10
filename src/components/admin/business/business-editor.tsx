@@ -11,6 +11,7 @@ import { BusinessPublicView } from "@/components/business/business-public-view";
 import { BusinessLookPicker } from "@/components/admin/business/business-look-picker";
 import { createBlock } from "@/lib/business/blocks";
 import { applyLook } from "@/lib/business/palettes";
+import { canEmbedSite, githubRepoUrl, parseGithubRepo, presentationSiteUrl, siteHostLabel } from "@/lib/business/github";
 import { clientBusinessUrl } from "@/lib/site-url";
 import {
   BLOCK_GROUPS,
@@ -23,7 +24,7 @@ import {
   type BusinessProject,
 } from "@/lib/business/types";
 
-type InspectorTab = "bloco" | "projeto" | "design" | "seo" | "pedidos";
+type InspectorTab = "bloco" | "projeto" | "site" | "design" | "seo" | "pedidos";
 
 const KEY_LABELS: Record<string, string> = {
   title: "Titulo",
@@ -271,6 +272,7 @@ export function BusinessEditor({ id }: { id: string }) {
             {([
               ["bloco", "Bloco"],
               ["projeto", "Projeto"],
+              ["site", "Site"],
               ["design", "Design"],
               ["seo", "SEO"],
               ["pedidos", "Pedidos"],
@@ -320,6 +322,24 @@ export function BusinessEditor({ id }: { id: string }) {
             />
           ) : null}
 
+          {tab === "site" ? (
+            <SiteForm
+              project={project}
+              patch={patch}
+              onInclude={() => {
+                const existing = project.blocks.find((block) => block.type === "site");
+                if (existing) {
+                  setSelected(existing.id);
+                  setTab("bloco");
+                  return;
+                }
+                const block = createBlock("site");
+                patch((p) => ({ ...p, blocks: [...p.blocks, block] }));
+                setSelected(block.id);
+                setTab("bloco");
+              }}
+            />
+          ) : null}
           {tab === "design" ? <DesignForm project={project} patch={patch} /> : null}
           {tab === "seo" ? <SeoForm project={project} patch={patch} /> : null}
           {tab === "pedidos" ? <LeadsPanel id={id} /> : null}
@@ -424,6 +444,223 @@ function ProjectForm({
         </button>
         <button type="button" className="cms-btn cms-btn--ghost" onClick={onRemove}>
           Excluir projeto
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SiteForm({
+  project,
+  patch,
+  onInclude,
+}: {
+  project: BusinessProject;
+  patch: (fn: (p: BusinessProject) => BusinessProject) => void;
+  onInclude: () => void;
+}) {
+  const [token, setToken] = useState("");
+  const [gh, setGh] = useState<{ connected: boolean; login: string; source: string }>({
+    connected: false,
+    login: "",
+    source: "",
+  });
+  const [busy, setBusy] = useState("");
+  const live = presentationSiteUrl(project);
+  const openUrl = (project.githubPreviewFiles || 0) > 0 ? `${clientBusinessUrl(project.slug)}/site/` : live;
+  const embeddable = canEmbedSite(live);
+  const host = siteHostLabel(live);
+  const hasSiteBlock = project.blocks.some((block) => block.type === "site");
+
+  useEffect(() => {
+    void apiFetch("/api/admin/business/github")
+      .then((res) => res.json())
+      .then((json) => {
+        if (json && typeof json.connected === "boolean") {
+          setGh({ connected: json.connected, login: json.login || "", source: json.source || "" });
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  async function connectGithub() {
+    setBusy("token");
+    try {
+      const res = await apiFetch("/api/admin/business/github", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error || "Token recusado.");
+        return;
+      }
+      setGh({ connected: true, login: json.login || "", source: "saved" });
+      setToken("");
+      toast.success(`GitHub conectado como ${json.login}.`);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function disconnectGithub() {
+    setBusy("token");
+    try {
+      const res = await apiFetch("/api/admin/business/github", { method: "DELETE" });
+      const json = await res.json();
+      setGh({ connected: Boolean(json.connected), login: json.login || "", source: json.source || "" });
+      toast.success("Token salvo removido.");
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function syncRepo() {
+    if (!project.githubRepo) return toast.error("Informe o repositorio GitHub.");
+    setBusy("sync");
+    try {
+      const res = await apiFetch(`/api/admin/business/projects/${project.id}/github-sync`, { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error || "Nao foi possivel sincronizar.");
+        return;
+      }
+      patch(() => json.project);
+      toast.success(`Preview pronto (${json.files} arquivos).`);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function uploadDist(file: File) {
+    setBusy("zip");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await apiFetch(`/api/admin/business/projects/${project.id}/site-preview`, { method: "POST", body: form });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error || "Falha ao enviar o zip.");
+        return;
+      }
+      patch(() => json.project);
+      toast.success(`Preview pronto (${json.files} arquivos).`);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  function setRepo(value: string) {
+    patch((p) => {
+      const ref = parseGithubRepo(value);
+      return { ...p, githubRepo: ref ? githubRepoUrl(ref) : value.trim() };
+    });
+  }
+
+  return (
+    <div className="biz-form">
+      <h3 className="biz-h2">Site do GitHub</h3>
+      <p className="biz-muted">
+        Repositorio privado precisa de autorizacao. O preview abre neste dominio, sem criar site ou dominio extra. O
+        cliente so ve se tiver interesse.
+      </p>
+      {gh.connected ? (
+        <p className="biz-muted">
+          GitHub conectado como {gh.login}
+          {gh.source === "env" ? " (token do ambiente)" : ""}.
+        </p>
+      ) : (
+        <p className="biz-site-note">
+          Gere um token em GitHub, Settings, Developer settings, Personal access tokens, com permissao repo. Cole
+          abaixo. O token fica criptografado e nao aparece na apresentacao.
+        </p>
+      )}
+      <Field label="Token do GitHub" hint="ghp_ ou github_pat_. Permissao repo para repositorios privados.">
+        <Input type="password" value={token} onChange={setToken} />
+      </Field>
+      <div className="biz-actions">
+        <button type="button" className="cms-btn cms-btn--ghost" disabled={busy === "token"} onClick={() => void connectGithub()}>
+          {busy === "token" ? "Validando..." : "Conectar GitHub"}
+        </button>
+        {gh.source === "saved" ? (
+          <button type="button" className="cms-btn cms-btn--ghost" disabled={Boolean(busy)} onClick={() => void disconnectGithub()}>
+            Desconectar
+          </button>
+        ) : null}
+      </div>
+      <Field label="Repositorio GitHub" hint="https://github.com/conta/projeto">
+        <Input value={project.githubRepo || ""} onChange={setRepo} />
+      </Field>
+      <Field
+        label="URL publica (opcional)"
+        hint="So se o site ja estiver no ar. Nao e obrigatorio para apresentar."
+      >
+        <Input value={project.githubSite || ""} onChange={(v) => patch((p) => ({ ...p, githubSite: v }))} />
+      </Field>
+      <div className="biz-actions">
+        <button type="button" className="cms-btn cms-btn--ghost" disabled={busy === "sync"} onClick={() => void syncRepo()}>
+          {busy === "sync" ? "Sincronizando..." : "Sincronizar repositorio"}
+        </button>
+      </div>
+      <Field
+        label="Zip do site pronto"
+        hint="App Vite/React: no projeto rode npm run build, zip a pasta dist e envie aqui. Sem dominio novo."
+      >
+        <label className="cms-image-field__pick">
+          <input
+            type="file"
+            accept=".zip,application/zip"
+            disabled={busy === "zip"}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (file) void uploadDist(file);
+            }}
+          />
+          {busy === "zip" ? "Enviando..." : "Enviar dist.zip"}
+        </label>
+      </Field>
+      {(project.githubPreviewFiles || 0) > 0 ? (
+        <p className="biz-muted">
+          Preview hospedado: {project.githubPreviewFiles} arquivos
+          {project.githubPreviewAt ? ` · ${new Date(project.githubPreviewAt).toLocaleString("pt-BR")}` : ""}.
+        </p>
+      ) : null}
+      {live ? (
+        <p className="biz-muted">Site usado na apresentacao: {host || live}</p>
+      ) : (
+        <p className="biz-muted">Conecte o GitHub e sincronize, ou envie o zip do dist, para o site aparecer aqui.</p>
+      )}
+      {embeddable && live ? (
+        <div className="biz-site-preview">
+          <iframe
+            src={live.startsWith("/") ? live : live}
+            title="Preview do site"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+          />
+        </div>
+      ) : null}
+      {openUrl ? (
+        <div className="biz-actions">
+          <a className="cms-btn cms-btn--ghost" href={openUrl} target="_blank" rel="noreferrer">
+            Abrir site
+          </a>
+          {project.githubRepo ? (
+            <a className="cms-btn cms-btn--ghost" href={project.githubRepo} target="_blank" rel="noreferrer">
+              Abrir GitHub
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+      <p className="biz-muted">
+        {hasSiteBlock
+          ? "Ja existe um bloco Site nesta apresentacao. Ele usa esta conexao."
+          : "Com o preview pronto, o site ja entra na apresentacao. Use o botao abaixo se quiser posicionar o bloco."}
+      </p>
+      <div className="biz-actions">
+        <button type="button" className="cms-btn cms-btn--ghost" onClick={onInclude}>
+          {hasSiteBlock ? "Ir para o bloco Site" : "Incluir bloco na apresentacao"}
         </button>
       </div>
     </div>
@@ -631,6 +868,20 @@ function BlockFields({
             <input type="checkbox" checked={Boolean(c.overlay)} onChange={(e) => set("overlay", e.target.checked)} />
             Escurecer imagem
           </label>
+        </>
+      ) : null}
+
+      {block.type === "site" ? (
+        <>
+          <Field label="Repositorio GitHub" hint="https://github.com/conta/projeto ou conta/projeto">
+            <Input value={String(c.repo ?? "")} onChange={(v) => set("repo", v)} />
+          </Field>
+          <Field
+            label="URL do site ao vivo"
+            hint="Vercel, GitHub Pages ou dominio. Se vazio, usa o site conectado no projeto."
+          >
+            <Input value={String(c.url ?? "")} onChange={(v) => set("url", v)} />
+          </Field>
         </>
       ) : null}
 

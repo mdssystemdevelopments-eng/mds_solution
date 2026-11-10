@@ -49,6 +49,22 @@ export async function ensureBusinessTables() {
     )
   `;
   await sql`CREATE INDEX IF NOT EXISTS business_visits_project_idx ON business_visits (project_id, created_at)`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS business_secrets (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS business_site_files (
+      project_id TEXT NOT NULL,
+      path TEXT NOT NULL,
+      mime TEXT NOT NULL,
+      bytes TEXT NOT NULL,
+      PRIMARY KEY (project_id, path)
+    )
+  `;
   schemaReady = true;
 }
 

@@ -38,6 +38,7 @@ export function createBlock(type: BlockType): BusinessBlock {
     form: { title: "Deixe seu contato", text: "A MDS responde por WhatsApp." },
     divider: { style: "line" },
     html: { html: "" },
+    site: { url: "", repo: "" },
   };
   return { id, type, hidden: false, content: (content[type] ?? {}) as Record<string, unknown> };
 }

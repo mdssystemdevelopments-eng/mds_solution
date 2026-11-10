@@ -48,6 +48,7 @@ export const BLOCK_TYPES = [
   "form",
   "divider",
   "html",
+  "site",
 ] as const;
 
 export type BlockType = (typeof BLOCK_TYPES)[number];
@@ -119,6 +120,10 @@ export type BusinessProject = {
   createdAt: string;
   updatedAt: string;
   publishedAt: string | null;
+  githubRepo: string;
+  githubSite: string;
+  githubPreviewAt?: string | null;
+  githubPreviewFiles?: number;
   design: BusinessDesign;
   seo: BusinessSeo;
   blocks: BusinessBlock[];
@@ -195,7 +200,7 @@ export const BLOCK_GROUPS: { id: string; label: string; types: BlockType[] }[] =
   { id: "conteudo", label: "Conteudo", types: ["hero", "text", "cards", "stats", "testimonials", "timeline", "table", "faq", "divider"] },
   { id: "midia", label: "Midia", types: ["image", "gallery", "video", "pdf"] },
   { id: "acao", label: "Conversao", types: ["pricing", "button", "cta", "contact", "form"] },
-  { id: "avancado", label: "Avancado", types: ["html"] },
+  { id: "avancado", label: "Avancado", types: ["html", "site"] },
 ];
 
 export const STATUS_LABELS: Record<BusinessStatus, string> = {
@@ -230,4 +235,5 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   form: "Formulario",
   divider: "Separador",
   html: "HTML",
+  site: "Site GitHub",
 };

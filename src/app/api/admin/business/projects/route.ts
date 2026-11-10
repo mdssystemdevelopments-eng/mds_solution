@@ -70,6 +70,10 @@ export async function POST(req: Request) {
     createdAt: now,
     updatedAt: now,
     publishedAt: null,
+    githubRepo: "",
+    githubSite: "",
+    githubPreviewAt: null,
+    githubPreviewFiles: 0,
     design: applyLook(templateDesign(template), {
       theme: typeof body.theme === "string" ? body.theme : undefined,
       palette: typeof body.palette === "string" ? body.palette : undefined,

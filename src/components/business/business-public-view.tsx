@@ -6,6 +6,7 @@ import { arr, str } from "@/lib/business/blocks";
 import { mediaSrc, sanitizeHtml } from "@/lib/business/helpers";
 import { lookTheme } from "@/lib/business/palettes";
 import { PAGE_CTA } from "@/lib/business/cta";
+import { canEmbedSite, liveSiteUrl, presentationSiteUrl, siteHostLabel } from "@/lib/business/github";
 import { TYPE_LABELS } from "@/lib/business/types";
 import { LeadAction, LeadProvider } from "@/components/business/business-lead";
 
@@ -18,12 +19,31 @@ function rewriteMedia(html: string): string {
     });
 }
 
-function SiteFrame({ html, src }: { html?: string; src?: string }) {
+function SiteFrame({ html, src, live }: { html?: string; src?: string; live?: boolean }) {
   const url = mediaSrc(src || "");
   const raw = String(html || "");
-  const sandbox = "allow-scripts allow-forms allow-popups allow-modals";
-  const frame = url ? (
-    <iframe className="bp-siteframe__view" src={url} title="Site" sandbox={sandbox} />
+  const sandbox = live
+    ? "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals"
+    : "allow-scripts allow-forms allow-popups allow-modals";
+  const embeddable = !url || canEmbedSite(url);
+  const host = siteHostLabel(url);
+  const frame = !embeddable ? (
+    <div className="bp-siteframe__fail">
+      <p>O GitHub.com nao abre como site dentro da pagina. Use a URL publicada do projeto.</p>
+      {url ? (
+        <a href={url} target="_blank" rel="noreferrer">
+          Abrir no GitHub
+        </a>
+      ) : null}
+    </div>
+  ) : url ? (
+    <iframe
+      className="bp-siteframe__view"
+      src={url}
+      title={host || "Site"}
+      sandbox={sandbox}
+      referrerPolicy="strict-origin-when-cross-origin"
+    />
   ) : (
     <iframe
       className="bp-siteframe__view"
@@ -33,12 +53,17 @@ function SiteFrame({ html, src }: { html?: string; src?: string }) {
     />
   );
   return (
-    <div className="bp-siteframe">
-      <div className="bp-siteframe__bar" aria-hidden="true">
+    <div className={`bp-siteframe${live ? " bp-siteframe--live" : ""}`}>
+      <div className="bp-siteframe__bar">
         <i />
         <i />
         <i />
-        <em>preview do site</em>
+        <em>{host || "preview do site"}</em>
+        {url ? (
+          <a href={url} target="_blank" rel="noreferrer">
+            Abrir site
+          </a>
+        ) : null}
       </div>
       {frame}
     </div>
@@ -84,10 +109,12 @@ function BlockView({
   block,
   preview,
   cover,
+  siteUrl,
 }: {
   block: BusinessBlock;
   preview?: boolean;
   cover?: string;
+  siteUrl?: string;
 }) {
   const c = block.content;
   if (block.hidden) return null;
@@ -413,6 +440,16 @@ function BlockView({
     );
   }
 
+  if (block.type === "site") {
+    const url = liveSiteUrl(str(c, "repo") || undefined, str(c, "url")) || siteUrl || "";
+    if (!url) return <EmptyNote preview={preview} text="Conecte o GitHub na aba Site ou informe a URL ao vivo." />;
+    return (
+      <section className="bp-siteframe-wrap bp-siteframe-wrap--live">
+        <SiteFrame src={url} live />
+      </section>
+    );
+  }
+
   return null;
 }
 
@@ -471,6 +508,8 @@ export function BusinessPublicView({
 }) {
   const d: BusinessDesign = project.design;
   const theme = lookTheme(d.theme);
+  const live = presentationSiteUrl(project);
+  const hasSiteBlock = project.blocks.some((block) => block.type === "site");
   return (
     <LeadProvider project={project} company={company} preview={preview}>
       <div
@@ -512,8 +551,13 @@ export function BusinessPublicView({
           </div>
         ) : null}
         {project.blocks.map((block) => (
-          <BlockView key={block.id} block={block} preview={preview} cover={project.cover} />
+          <BlockView key={block.id} block={block} preview={preview} cover={project.cover} siteUrl={live} />
         ))}
+        {!hasSiteBlock && live ? (
+          <section className="bp-siteframe-wrap bp-siteframe-wrap--live">
+            <SiteFrame src={live} live />
+          </section>
+        ) : null}
         {d.showFooter ? (
           <footer className="bp-foot">
             <div className="bp-wrap bp-foot__in">
